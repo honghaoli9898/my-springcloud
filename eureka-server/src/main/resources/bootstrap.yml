@@ -1,0 +1,25 @@
+server:
+  port: ${eureka.instance.port}
+
+spring:
+  application:
+    name: ${spring.cloud.eureka.serviceId}
+  security:
+    basic:
+      enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true      #将IP注册到Eureka Server上
+  client:
+    registerWithEureka: false    #单节点不需要自注册
+    fetchRegistry: false         #表示是否从Eureka Server获取注册信息，单节点不需要
+    serviceUrl:
+      defaultZone: http://${security.user.name}:${security.user.password}@${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    enable-self-preservation: true         #开发测试环境关闭自我保护，上线时需要开启
+    eviction-interval-timer-in-ms: 5000     #client下线通知server的频率
+    peer-node-read-timeout-ms: 2000
+logging:
+  level:
+    com.netflix: warn

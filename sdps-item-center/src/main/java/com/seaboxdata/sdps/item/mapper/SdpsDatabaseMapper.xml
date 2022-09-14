@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsDatabaseMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.item.model.SdpsDatabase">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="create_user" jdbcType="VARCHAR" property="createUser" />
+		<result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+		<result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+	</resultMap>
+	<resultMap id="SelectDatabaseMap"
+		type="com.seaboxdata.sdps.item.dto.database.DatabaseDto">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="create_user" jdbcType="VARCHAR" property="createUser" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="assItemId" jdbcType="VARCHAR" property="assItemId" />
+		<result column="assItemName" jdbcType="VARCHAR" property="assItemName" />
+		<result column="assItemIden" jdbcType="VARCHAR" property="assItemIden" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="cluster_show_name" jdbcType="VARCHAR" property="clusterShowName" />
+	</resultMap>
+	<select id="findDatabasesByExample" resultMap="SelectDatabaseMap">
+		SELECT
+		sdb.id,
+		sdb.`name`,
+		sdb.create_user,
+		sdb.update_time,
+		sdb.`desc`,
+		sdb.type_id,
+		sdb.item_id AS assItemId,
+		si.`name` AS assItemName,
+		si.iden
+		as assItemIden,
+		sdt.`name` AS type,
+		sdb.cluster_id,
+		sc.cluster_show_name
+		FROM
+		sdps_database AS sdb
+		INNER JOIN
+		sdps_datasource_type AS sdt ON
+		sdt.id =
+		sdb.type_id
+		INNER JOIN
+		sdps_item AS si ON si.id = sdb.item_id
+		INNER JOIN
+		sdps_cluster as sc on sc.cluster_id = sdb.cluster_id
+		<where>
+			<if test="param != null">
+				<if test="param.name != null and param.name != ''">
+					and sdb.name like '%${param.name}%'
+				</if>
+				<if test="param.typeId != null">
+					and sdb.type_id = #{param.typeId}
+				</if>
+				<if test="param.itemId != null">
+					and si.id = #{param.itemId}
+				</if>
+				<if test="param.id != null">
+					and sdb.id = #{param.id}
+				</if>
+				<if test="param.clusterId != null">
+					and sdb.cluster_id = #{param.clusterId}
+				</if>
+				<if
+					test="param.dataPermissionSql != null ">
+					and ${param.dataPermissionSql}
+				</if>
+			</if>
+		</where>
+		ORDER
+		BY sdb.update_time desc
+	</select>
+	<select id="getItemInfoByDatabaseName" resultType="java.util.HashMap">
+		SELECT
+		sd.`name`,si.`name` as itemName
+		FROM
+		sdps_database AS sd
+		INNER JOIN
+		sdps_item AS si ON si.id = sd.item_id
+		<where>
+			<if test="names != null">
+				sd.`name` in
+				<foreach collection="names" index="index" item="name" open="("
+					separator="," close=")">
+					#{name}
+				</foreach>
+			</if>
+		</where>
+
+	</select>
+</mapper>

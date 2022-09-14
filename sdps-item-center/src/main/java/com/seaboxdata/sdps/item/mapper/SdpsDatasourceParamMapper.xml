@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsDatasourceParamMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.item.model.SdpsDatasourceParam">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="display_name" jdbcType="VARCHAR" property="displayName" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="rank" jdbcType="INTEGER" property="rank" />
+		<result column="must" jdbcType="BIT" property="must" />
+		<result column="field_type" jdbcType="VARCHAR" property="fieldType" />
+	</resultMap>
+</mapper>

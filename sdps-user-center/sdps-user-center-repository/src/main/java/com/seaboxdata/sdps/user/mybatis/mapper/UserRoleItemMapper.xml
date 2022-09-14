@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.UserRoleItemMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.user.mybatis.model.UserRoleItem">
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="role_id" jdbcType="BIGINT" property="roleId" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+	</resultMap>
+
+	<select id="findRolesByUserId" resultType="com.seaboxdata.sdps.common.core.model.SysRole">
+		select r.* from
+		sys_role r
+		inner join user_role_item ru on r.id =
+		ru.role_id and
+		ru.user_id = #{userId}
+		<where>
+			<if test="type != null and type != ''">
+				and r.type =#{type}
+			</if>
+		</where>
+	</select>
+	<delete id="deleteUserRole">
+		delete from user_role_item
+		<where>
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+			<if test="roleId != null">
+				and role_id = #{roleId}
+			</if>
+		</where>
+	</delete>
+</mapper>

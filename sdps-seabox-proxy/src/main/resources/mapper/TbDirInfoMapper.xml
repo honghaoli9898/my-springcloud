@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.seaboxProxy.mapper.SeaBoxStatMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.framework.bean.TbDirInfo">
+		<result column="CLUSTER" jdbcType="VARCHAR" property="cluster" />
+		<result column="PATH" jdbcType="VARCHAR" property="path" />
+		<result column="TOTAL_FILE_NUM" jdbcType="BIGINT" property="totalFileNum" />
+		<result column="TOTAL_FILE_SIZE" jdbcType="BIGINT" property="totalFileSize" />
+		<result column="AVG_FILE_SIZE" jdbcType="DOUBLE" property="avgFileSize" />
+		<result column="TOTAL_BLOCK_NUM" jdbcType="BIGINT" property="totalBlockNum" />
+		<result column="TOTAL_SMALL_FILE_NUM" jdbcType="BIGINT"
+			property="totalSmallFileNum" />
+		<result column="TOTAL_EMPTY_FILE_NUM" jdbcType="BIGINT"
+			property="totalEmptyFileNum" />
+		<result column="PATH_INDEX" jdbcType="INTEGER" property="pathIndex" />
+		<result column="TYPE" jdbcType="INTEGER" property="type" />
+		<result column="TYPE_VALUE" jdbcType="VARCHAR" property="typeValue" />
+		<result column="TENANT" jdbcType="VARCHAR" property="tenant" />
+		<result column="MODIFICATION_TIME" jdbcType="VARCHAR" property="modificationTime" />
+		<result column="ACCESS_TIME" jdbcType="VARCHAR" property="accessTime" />
+		<result column="TEMPERATURE" jdbcType="INTEGER" property="temperature" />
+		<result column="DAY_TIME" jdbcType="VARCHAR" property="dayTime" />
+		<result column="TOTALFILENUM" jdbcType="BIGINT" property="totalFileNum" />
+		<result column="TOTALFILESIZE" jdbcType="BIGINT" property="totalFileSize" />
+		<result column="TOTALSMALLFILENUM" jdbcType="BIGINT"
+			property="totalSmallFileNum" />
+	</resultMap>
+
+	<resultMap id="StorgeBaseResultMap"
+		type="com.seaboxdata.sdps.common.framework.bean.StorgeDirInfo"
+		extends="BaseResultMap">
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="DirDTOResultMap"
+		type="com.seaboxdata.sdps.common.framework.bean.dto.DirInfoDTO">
+		<result column="SUM_TOTAL_FILE_NUM" jdbcType="BIGINT" property="sumTotalFileNum" />
+		<result column="SUM_TOTAL_FILE_SIZE" jdbcType="BIGINT"
+			property="sumTotalFileSize" />
+		<result column="SUM_TOTAL_BLOCK_NUM" jdbcType="BIGINT"
+			property="sumTotalBlockNum" />
+		<result column="SUM_TOTAL_SMALL_FILE_NUM" jdbcType="BIGINT"
+			property="sumTotalSmallFileNum" />
+		<result column="SUM_TOTAL_EMPTY_FILE_NUM" jdbcType="BIGINT"
+			property="sumTotalEmptyFileNum" />
+	</resultMap>
+
+	<sql id="BaseColumns">
+		CLUSTER, PATH, TOTAL_FILE_NUM,
+		TOTAL_FILE_SIZE,
+		AVG_FILE_SIZE, TOTAL_BLOCK_NUM,
+		TOTAL_SMALL_FILE_NUM,
+		TOTAL_EMPTY_FILE_NUM, PATH_INDEX,
+		TYPE,
+		TYPE_VALUE, TENANT,
+		MODIFICATION_TIME, ACCESS_TIME, TEMPERATURE,
+		DAY_TIME
+	</sql>
+
+	<select id="getTenantTopN" resultType="com.seaboxdata.sdps.common.framework.bean.dto.TopDTO">
+		select TENANT,DAY_TIME,sum(${dirRequest.metric}) statValue
+		from
+		HDFS_NM.TB_DIR_INFO
+		where DAY_TIME &gt; #{dirRequest.startDay} and
+		DAY_TIME &lt;=
+		#{dirRequest.endDay}
+		<if test="dirRequest.isTotal">
+			and PATH = '/'
+		</if>
+		<if test="!dirRequest.isTotal">
+			and TENANT in
+			<foreach collection="dirRequest.tenants" item="id" index="index"
+				open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+			and TYPE IN
+			<foreach collection="dirRequest.storageTypeList" item="id"
+				separator="," open="(" close=")">
+				#{id}
+			</foreach>
+		</if>
+		group by TENANT,DAY_TIME
+	</select>
+	<select id="getTopNTentant" resultType="STRING">
+		select TENANT
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME =
+		#{dirRequest.endDay}
+		and TENANT
+		is not null
+		and TYPE IN
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		group by TENANT
+		order by
+		sum(${dirRequest.metric})
+		<if test="dirRequest.desc">
+			desc
+		</if>
+		limit #{dirRequest.topNum}
+	</select>
+
+	<select id="getTopNResource" resultMap="DirDTOResultMap">
+		select TENANT, sum(TOTAL_FILE_NUM) SUM_TOTAL_FILE_NUM,
+		sum(TOTAL_FILE_SIZE) SUM_TOTAL_FILE_SIZE, sum(TOTAL_SMALL_FILE_NUM)
+		SUM_TOTAL_SMALL_FILE_NUM
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME =
+		#{dirRequest.endDay}
+		and TENANT
+		is not null
+		and TYPE IN
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		group by TENANT
+		order by
+		sum(${dirRequest.orderColumn})
+		<if test="dirRequest.desc">
+			desc
+		</if>
+	</select>
+
+	<select id="getDiffResource" resultMap="BaseResultMap">
+		select TENANT,DAY_TIME, sum(TOTAL_FILE_NUM) TOTAL_FILE_NUM,
+		sum(TOTAL_FILE_SIZE) TOTAL_FILE_SIZE, sum(TOTAL_SMALL_FILE_NUM)
+		TOTAL_SMALL_FILE_NUM
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME =
+		#{dirRequest.startDay}
+		and
+		TENANT in
+		<foreach collection="dirRequest.tenants" item="id" index="index"
+			open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		and TYPE IN
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		group by TENANT
+	</select>
+
+	<select id="getResourceByTenant" resultMap="BaseResultMap">
+		select TENANT, PATH, DAY_TIME, TOTAL_FILE_NUM, TOTAL_FILE_SIZE,
+		TOTAL_SMALL_FILE_NUM
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME =
+		#{dirRequest.endDay}
+		and TENANT
+		= #{dirRequest.tenant}
+		order by
+		${dirRequest.orderColumn}
+		<if test="dirRequest.desc">
+			desc
+		</if>
+	</select>
+
+	<select id="getDiffResourceByTenant" resultMap="BaseResultMap">
+		select TENANT,
+		PATH, DAY_TIME, TOTAL_FILE_NUM, TOTAL_FILE_SIZE,
+		TOTAL_SMALL_FILE_NUM
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME = #{dirRequest.startDay}
+		and
+		TENANT = #{dirRequest.tenant}
+	</select>
+
+	<select id="selectPathTrend" resultMap="DirDTOResultMap">
+		select PATH, DAY_TIME,
+		TOTAL_FILE_NUM, TOTAL_FILE_SIZE,
+		TOTAL_SMALL_FILE_NUM, TOTAL_BLOCK_NUM,
+		TOTAL_EMPTY_FILE_NUM
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME &gt;=
+		#{dirRequest.startDay} AND DAY_TIME &lt;=
+		#{dirRequest.endDay}
+		AND PATH
+		= #{dirRequest.path}
+		ORDER
+		BY DAY_TIME
+	</select>
+
+	<select id="selectDBSumTrendInType" resultMap="DirDTOResultMap">
+		select DAY_TIME,
+		sum(TOTAL_FILE_NUM) TOTAL_FILE_NUM,
+		sum(TOTAL_FILE_SIZE) TOTAL_FILE_SIZE,
+		sum(TOTAL_SMALL_FILE_NUM)
+		TOTAL_SMALL_FILE_NUM,
+		sum(TOTAL_BLOCK_NUM) TOTAL_BLOCK_NUM,
+		sum(TOTAL_EMPTY_FILE_NUM) TOTAL_EMPTY_FILE_NUM
+		from
+		HDFS_NM.TB_DIR_INFO
+		where TYPE in
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		and DAY_TIME &gt;= #{dirRequest.startDay} and DAY_TIME &lt;=
+		#{dirRequest.endDay}
+		<if test="dirRequest.dbName != null and dirRequest.dbName != ''">
+			and TYPE_VALUE
+			<if test="dirRequest.table != null and dirRequest.table != ''">
+				= #{dirRequest.dbName} || '.' || #{dirRequest.table}
+			</if>
+			<if test="dirRequest.table == null or dirRequest.table == ''">
+				like #{dirRequest.dbName} || '.%'
+			</if>
+		</if>
+		<if
+			test="(dirRequest.dbName == null or dirRequest.dbName == '') and (dirRequest.table != null and dirRequest.table != '')">
+			and TYPE_VALUE like '%.' || #{dirRequest.table}
+		</if>
+		group by DAY_TIME
+	</select>
+	<select id="getItemStorage" resultMap="StorgeBaseResultMap">
+		SELECT
+		tenant,
+		day_time,
+		sum( total_file_num ) totalFileNum,
+		sum(
+		total_file_size ) totalFileSize,
+		sum( total_small_file_num )
+		totalSmallFileNum
+		FROM
+		HDFS_NM.TB_DIR_INFO
+		<where>
+			<if test="storgeRequest.pathIndexs != null">
+				AND path_index IN
+				<foreach collection="storgeRequest.pathIndexs" item="id"
+					index="index" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if test="storgeRequest.types != null">
+				AND type IN
+				<foreach collection="storgeRequest.types" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if test="!storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.endDay}
+			</if>
+			<if test="storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.startDay}
+			</if>
+			<choose>
+				<when test="storgeRequest.tenants != null">
+					AND tenant in
+					<foreach collection="storgeRequest.tenants" item="id"
+						index="index" open="(" close=")" separator=",">
+						#{id}
+					</foreach>
+				</when>
+				<otherwise>
+					AND tenant IS NOT NULL
+				</otherwise>
+			</choose>
+		</where>
+		GROUP BY
+		tenant,
+		day_time
+		ORDER BY
+		${storgeRequest.orderColumn}
+		<if test="storgeRequest.desc">
+			DESC
+		</if>
+	</select>
+
+	<select id="getFileStorageByTenant" resultMap="StorgeBaseResultMap">
+		SELECT
+		path,
+		tenant,
+		day_time,
+		total_file_num,
+		total_file_size,
+		total_small_file_num
+		FROM
+		HDFS_NM.TB_DIR_INFO
+		<where>
+			<if test="storgeRequest.types != null">
+				AND type IN
+				<foreach collection="storgeRequest.types" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if test="!storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.endDay}
+			</if>
+			<if test="storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.startDay}
+			</if>
+			<if test="storgeRequest.tenants != null">
+				AND tenant in
+				<foreach collection="storgeRequest.tenants" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if test="storgeRequest.paths != null">
+				AND path in
+				<foreach collection="storgeRequest.paths" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY
+		${storgeRequest.orderColumn}
+		<if test="storgeRequest.desc">
+			DESC
+		</if>
+	</select>
+
+	<select id="selectPathByParentPath" resultType="STRING">
+		select distinct
+		path
+		from HDFS_NM.TB_DIR_INFO
+		where path like #{dirRequest.path}||'%'
+		and path_index = #{dirRequest.pathIndex}
+	</select>
+
+	<select id="selectDatabase" resultType="STRING">
+		select distinct path, type, type_value
+		from HDFS_NM.TB_DIR_INFO
+		where
+		type in
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		and type_value like '%'||#{dirRequest.dbName}||'%'
+	</select>
+
+	<select id="selectSubPathTrend" resultMap="StorgeBaseResultMap">
+		select PATH, DAY_TIME,TYPE,TYPE_VALUE,
+		TOTAL_FILE_NUM ,
+		TOTAL_FILE_SIZE,
+		TOTAL_SMALL_FILE_NUM , TOTAL_BLOCK_NUM,
+		TOTAL_EMPTY_FILE_NUM
+		from
+		HDFS_NM.TB_DIR_INFO
+		<where>
+			<if test="!storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.endDay}
+			</if>
+			<if test="storgeRequest.isStartDay">
+				AND day_time = #{storgeRequest.startDay}
+			</if>
+			<if test="storgeRequest.path != null">
+				AND PATH like '${storgeRequest.path}%'
+			</if>
+			<if test="storgeRequest.pathDepth != null">
+				AND PATH_INDEX &gt;= #{storgeRequest.pathDepth}
+			</if>
+			<if test="storgeRequest.paths != null">
+				AND path in
+				<foreach collection="storgeRequest.paths" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if test="storgeRequest.types != null">
+				AND type IN
+				<foreach collection="storgeRequest.types" item="id" index="index"
+					open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+			<if
+				test="storgeRequest.searchPath != null and storgeRequest.searchPath != ''">
+				AND path like '%${storgeRequest.searchPath}%'
+			</if>
+			<if test="storgeRequest.names != null">
+				<foreach collection="storgeRequest.names" item="name" open="AND ("
+					close=")" separator="or">
+					PATH like '${name}%'
+				</foreach>
+			</if>
+		</where>
+		ORDER
+		BY ${storgeRequest.orderColumn}
+		<if test="storgeRequest.desc">
+			DESC
+		</if>
+	</select>
+
+	<select id="selectFileSizeByPath" resultMap="DirDTOResultMap">
+		select
+			DAY_TIME, PATH, TOTAL_FILE_SIZE SUM_TOTAL_FILE_SIZE
+		from HDFS_NM.TB_DIR_INFO
+		where path = #{dirRequest.path} and day_time =
+		#{dirRequest.startDay}
+	</select>
+
+	<select id="selectFileSizeByDatabase" resultMap="DirDTOResultMap">
+		select
+			DAY_TIME, sum(TOTAL_FILE_SIZE) SUM_TOTAL_FILE_SIZE
+		from HDFS_NM.TB_DIR_INFO
+		where type_value = #{dirRequest.dbName} and
+		day_time = #{dirRequest.startDay} and type in
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		group by DAY_TIME
+	</select>
+
+	<select id="selectFileSizeByTable" resultMap="DirDTOResultMap">
+		select DAY_TIME, sum(TOTAL_FILE_SIZE) SUM_TOTAL_FILE_SIZE
+		from
+		HDFS_NM.TB_DIR_INFO
+		where DAY_TIME = #{dirRequest.startDay} and TYPE in
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		<if test="dirRequest.dbName != null and dirRequest.dbName != ''">
+			and TYPE_VALUE
+			<if test="dirRequest.table != null and dirRequest.table != ''">
+				= #{dirRequest.dbName} || '.' || #{dirRequest.table}
+			</if>
+			<if test="dirRequest.table == null or dirRequest.table == ''">
+				like #{dirRequest.dbName} || '.%'
+			</if>
+		</if>
+		<if
+			test="(dirRequest.dbName == null or dirRequest.dbName == '') and (dirRequest.table != null and dirRequest.table != '')">
+			and TYPE_VALUE like '%.' || #{dirRequest.table}
+		</if>
+		group by DAY_TIME
+	</select>
+
+	<select id="selectRankByPath" resultMap="DirDTOResultMap">
+		select
+		<include refid="BaseColumns" />
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME = #{dirRequest.endDay} and
+		PATH_INDEX = #{dirRequest.pathIndex} and
+		PATH like #{dirRequest.path}
+		|| '/%'
+		order by #{dirRequest.orderColumn}
+		<if test="dirRequest.desc">
+			desc
+		</if>
+		limit #{dirRequest.topNum}
+	</select>
+
+	<select id="selectRankByDB" resultMap="DirDTOResultMap">
+		select
+		<include refid="BaseColumns" />
+		from HDFS_NM.TB_DIR_INFO
+		where DAY_TIME = #{dirRequest.startDay} and
+		TYPE in
+		<foreach collection="dirRequest.storageTypeList" item="id"
+			separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		<if test="dirRequest.dbName != null and dirRequest.dbName != ''">
+			and TYPE_VALUE like #{dirRequest.dbName} || '.%'
+		</if>
+		order by #{dirRequest.orderColumn}
+		<if test="dirRequest.desc">
+			desc
+		</if>
+		limit #{dirRequest.topNum}
+	</select>
+
+	<select id="selectLatestDay" resultType="STRING">
+		select MAX(DAY_TIME) DAY_TIME from HDFS_NM.TB_DIR_INFO where DAY_TIME &lt;= #{dayTime}
+	</select>
+</mapper>

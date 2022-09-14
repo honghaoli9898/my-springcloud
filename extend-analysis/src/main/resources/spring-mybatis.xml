@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+	<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:db.properties" />
+
+	<!-- 配置数据源 -->
+	<bean id="defaultDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.mysql.driver}" />
+		<property name="url" value="${jdbc.mysql.url}" />
+		<property name="username" value="${jdbc.mysql.username}" />
+		<property name="password" value="${jdbc.mysql.password}" />
+
+		<property name="filters" value="stat" />
+
+		<property name="maxActive" value="20" />
+		<property name="initialSize" value="1" />
+		<property name="maxWait" value="60000" />
+		<property name="minIdle" value="1" />
+
+		<property name="asyncInit" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="50" />
+	</bean>
+<!--	<bean id="dataSource" class="com.seabox.flink.mybatis.datasource.MultiDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="defaultDataSource" value-ref="defaultDataSource" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="defaultDataSource" />
+	</bean>-->
+	<bean id="sqlSessionFactory"
+		class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+		<property name="dataSource" ref="defaultDataSource" />
+		<property name="configuration" ref="configuration" />
+		<property name="mapperLocations" value="classpath:mappers/*.xml" />
+		<property name="globalConfig" ref="globalConfig" />
+		<property name="plugins">
+			<array>
+				<ref bean="mybatisPlusInterceptor" />
+			</array>
+		</property>
+	</bean>
+
+	<bean id="configuration" class="com.baomidou.mybatisplus.core.MybatisConfiguration">
+		<!-- <property name="useDeprecatedExecutor" value="false" /> -->
+		<property name="logImpl" value="org.apache.ibatis.logging.log4j.Log4jImpl" />
+		<property name="mapUnderscoreToCamelCase" value="true" />
+	</bean>
+
+	<bean id="mybatisPlusInterceptor"
+		class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+		<property name="interceptors">
+			<list>
+				<ref bean="paginationInnerInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="paginationInnerInterceptor"
+		class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
+		<constructor-arg name="dbType" value="MYSQL" />
+	</bean>
+
+	<bean id="countSqlParser"
+		class="com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize">
+		<property name="optimizeJoin" value="true" />
+	</bean>
+
+	<bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+		<property name="dbConfig" ref="dbConfig" />
+	</bean>
+
+	<bean id="dbConfig"
+		class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+		<property name="idType" value="AUTO" />
+	</bean>
+
+	<!-- MyBatis Mapper Scan Config -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.seaboxdata.sdps.extendAnalysis.mapper" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="defaultDataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+</beans>

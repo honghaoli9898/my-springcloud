@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsFileManagerMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.item.model.SdpsFileManager">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="create_user" jdbcType="BIGINT" property="createUser" />
+		<result column="create_username" jdbcType="VARCHAR" property="createUsername" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="path" jdbcType="VARCHAR" property="path" />
+		<result column="belong" jdbcType="CHAR" property="belong" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="server_type" jdbcType="VARCHAR" property="serverType" />
+	</resultMap>
+	<select id="pageList" resultType="com.seaboxdata.sdps.item.model.SdpsFileManager">
+		select a.* from(
+		SELECT
+		*
+		FROM
+		sdps_file_manager
+		WHERE
+		belong = 'O'
+		AND
+		create_user =
+		#{request.userId}
+		<if test="request.fileName != null and request.fileName != ''">
+			and name like '%${request.fileName}%'
+		</if>
+		<if test="request.type != null and request.type != ''">
+			and type = #{request.type}
+		</if>
+		<if test="request.itemId != null">
+			and item_id = #{request.itemId}
+		</if>
+		<if test="request.clusterId != null">
+			and cluster_id = #{request.clusterId}
+		</if>
+		<if test="request.serverType != null and request.serverType != ''">
+			and server_type = #{request.serverType}
+		</if>
+		<if test="request.ids != null and request.ids.size() != 0">
+			UNION ALL
+			SELECT
+			*
+			FROM
+			sdps_file_manager
+			where
+			belong = 'P'
+			AND item_id IN
+			<foreach collection="request.ids" index="index" item="id"
+				open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			<if test="request.fileName != null and request.fileName != ''">
+				and name like '%${request.fileName}%'
+			</if>
+			<if test="request.type != null and request.type != ''">
+				and type = #{request.type}
+			</if>
+			<if test="request.itemId != null">
+				and item_id = #{request.itemId}
+			</if>
+			<if test="request.clusterId != null">
+				and cluster_id = #{request.clusterId}
+			</if>
+			<if test="request.serverType != null and request.serverType != ''">
+				and server_type = #{request.serverType}
+			</if>
+		</if>
+		) as a order by create_time desc
+	</select>
+</mapper>

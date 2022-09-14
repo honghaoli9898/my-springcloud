@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.seaboxdata.sdps.item.mapper.SdpsTenantResourceMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsTenantResource">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="ass_cluster_id" jdbcType="BIGINT" property="assClusterId" />
+		<result column="ass_cluster_name" jdbcType="VARCHAR" property="assClusterName" />
+		<result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+		<result column="hdfs_dir" jdbcType="VARCHAR" property="hdfsDir" />
+		<result column="space_quota" jdbcType="BIGINT" property="spaceQuota" />
+		<result column="file_num_quota" jdbcType="BIGINT" property="fileNumQuota" />
+		<result column="resource_full_name" jdbcType="VARCHAR"
+			property="resourceFullName" />
+		<result column="resource_name" jdbcType="VARCHAR" property="resourceName" />
+		<result column="max_core" jdbcType="INTEGER" property="maxCore" />
+		<result column="max_memory" jdbcType="INTEGER" property="maxMemory" />
+		<result column="max_app_num" jdbcType="INTEGER" property="maxAppNum" />
+		<result column="max_app_master_ratio" jdbcType="INTEGER"
+			property="maxAppMasterRatio" />
+		<result column="weight" jdbcType="INTEGER" property="weight" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+	</resultMap>
+</mapper>

@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.job.admin.dao.SdpsClusterDao">
+  <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.job.admin.core.model.SdpsCluster">
+    <id column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+    <id column="cluster_passwd" jdbcType="VARCHAR" property="clusterPasswd" />
+    <result column="cluster_name" jdbcType="VARCHAR" property="clusterName" />
+    <result column="cluster_show_name" jdbcType="VARCHAR" property="clusterShowName" />
+    <result column="storage_resource_id" jdbcType="INTEGER" property="storageResourceId" />
+    <result column="calc_resource_id" jdbcType="INTEGER" property="calcResourceId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="cluster_status_id" jdbcType="INTEGER" property="clusterStatusId" />
+    <result column="cluster_source" jdbcType="VARCHAR" property="clusterSource" />
+    <result column="cluster_type_id" jdbcType="INTEGER" property="clusterTypeId" />
+    <result column="principal_id" jdbcType="BIGINT" property="principalId" />
+    <result column="is_use" jdbcType="BIT" property="isUse" />
+    <result column="cluster_ip" jdbcType="VARCHAR" property="clusterIp" />
+    <result column="cluster_port" jdbcType="INTEGER" property="clusterPort" />
+    <result column="cluster_account" jdbcType="VARCHAR" property="clusterAccount" />
+    <result column="cluster_description" jdbcType="VARCHAR" property="clusterDescription" />
+    <result column="cluster_host_conf" jdbcType="VARCHAR" property="clusterHostConf" />
+    <result column="cluster_conf_save_path" jdbcType="VARCHAR" property="clusterConfSavePath" />
+    <result column="server_id" jdbcType="INTEGER" property="serverId" />
+    <result column="creater_id" jdbcType="BIGINT" property="createrId" />
+    <result column="mender_id" jdbcType="BIGINT" property="menderId" />
+    <result column="remote_url" jdbcType="VARCHAR" property="remoteUrl" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_running" jdbcType="BIT" property="isRunning" />
+    <result column="kerberos" jdbcType="BIT" property="kerberos" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    cluster_id, cluster_passwd, cluster_name, cluster_show_name, storage_resource_id, 
+    calc_resource_id, create_time, cluster_status_id, cluster_source, cluster_type_id, 
+    principal_id, is_use, cluster_ip, cluster_port, cluster_account, cluster_description, 
+    cluster_host_conf, cluster_conf_save_path, server_id, creater_id, mender_id, remote_url, 
+    update_time, is_running
+  </sql>
+  <select id="selectByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsClusterExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sdps_cluster
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sdps_cluster
+    where cluster_id = #{clusterId,jdbcType=INTEGER}
+      and cluster_passwd = #{clusterPasswd,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from sdps_cluster
+    where cluster_id = #{clusterId,jdbcType=INTEGER}
+      and cluster_passwd = #{clusterPasswd,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsClusterExample">
+    delete from sdps_cluster
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsCluster">
+    insert into sdps_cluster (cluster_id, cluster_passwd, cluster_name, 
+      cluster_show_name, storage_resource_id, calc_resource_id, 
+      create_time, cluster_status_id, cluster_source, 
+      cluster_type_id, principal_id, is_use, 
+      cluster_ip, cluster_port, cluster_account, 
+      cluster_description, cluster_host_conf, cluster_conf_save_path, 
+      server_id, creater_id, mender_id, 
+      remote_url, update_time, is_running
+      )
+    values (#{clusterId,jdbcType=INTEGER}, #{clusterPasswd,jdbcType=VARCHAR}, #{clusterName,jdbcType=VARCHAR}, 
+      #{clusterShowName,jdbcType=VARCHAR}, #{storageResourceId,jdbcType=INTEGER}, #{calcResourceId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{clusterStatusId,jdbcType=INTEGER}, #{clusterSource,jdbcType=VARCHAR}, 
+      #{clusterTypeId,jdbcType=INTEGER}, #{principalId,jdbcType=BIGINT}, #{isUse,jdbcType=BIT}, 
+      #{clusterIp,jdbcType=VARCHAR}, #{clusterPort,jdbcType=INTEGER}, #{clusterAccount,jdbcType=VARCHAR}, 
+      #{clusterDescription,jdbcType=VARCHAR}, #{clusterHostConf,jdbcType=VARCHAR}, #{clusterConfSavePath,jdbcType=VARCHAR}, 
+      #{serverId,jdbcType=INTEGER}, #{createrId,jdbcType=BIGINT}, #{menderId,jdbcType=BIGINT}, 
+      #{remoteUrl,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{isRunning,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsCluster">
+    insert into sdps_cluster
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="clusterId != null">
+        cluster_id,
+      </if>
+      <if test="clusterPasswd != null">
+        cluster_passwd,
+      </if>
+      <if test="clusterName != null">
+        cluster_name,
+      </if>
+      <if test="clusterShowName != null">
+        cluster_show_name,
+      </if>
+      <if test="storageResourceId != null">
+        storage_resource_id,
+      </if>
+      <if test="calcResourceId != null">
+        calc_resource_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="clusterStatusId != null">
+        cluster_status_id,
+      </if>
+      <if test="clusterSource != null">
+        cluster_source,
+      </if>
+      <if test="clusterTypeId != null">
+        cluster_type_id,
+      </if>
+      <if test="principalId != null">
+        principal_id,
+      </if>
+      <if test="isUse != null">
+        is_use,
+      </if>
+      <if test="clusterIp != null">
+        cluster_ip,
+      </if>
+      <if test="clusterPort != null">
+        cluster_port,
+      </if>
+      <if test="clusterAccount != null">
+        cluster_account,
+      </if>
+      <if test="clusterDescription != null">
+        cluster_description,
+      </if>
+      <if test="clusterHostConf != null">
+        cluster_host_conf,
+      </if>
+      <if test="clusterConfSavePath != null">
+        cluster_conf_save_path,
+      </if>
+      <if test="serverId != null">
+        server_id,
+      </if>
+      <if test="createrId != null">
+        creater_id,
+      </if>
+      <if test="menderId != null">
+        mender_id,
+      </if>
+      <if test="remoteUrl != null">
+        remote_url,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isRunning != null">
+        is_running,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="clusterId != null">
+        #{clusterId,jdbcType=INTEGER},
+      </if>
+      <if test="clusterPasswd != null">
+        #{clusterPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterName != null">
+        #{clusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterShowName != null">
+        #{clusterShowName,jdbcType=VARCHAR},
+      </if>
+      <if test="storageResourceId != null">
+        #{storageResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="calcResourceId != null">
+        #{calcResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clusterStatusId != null">
+        #{clusterStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="clusterSource != null">
+        #{clusterSource,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterTypeId != null">
+        #{clusterTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="principalId != null">
+        #{principalId,jdbcType=BIGINT},
+      </if>
+      <if test="isUse != null">
+        #{isUse,jdbcType=BIT},
+      </if>
+      <if test="clusterIp != null">
+        #{clusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterPort != null">
+        #{clusterPort,jdbcType=INTEGER},
+      </if>
+      <if test="clusterAccount != null">
+        #{clusterAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterDescription != null">
+        #{clusterDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterHostConf != null">
+        #{clusterHostConf,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterConfSavePath != null">
+        #{clusterConfSavePath,jdbcType=VARCHAR},
+      </if>
+      <if test="serverId != null">
+        #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="createrId != null">
+        #{createrId,jdbcType=BIGINT},
+      </if>
+      <if test="menderId != null">
+        #{menderId,jdbcType=BIGINT},
+      </if>
+      <if test="remoteUrl != null">
+        #{remoteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isRunning != null">
+        #{isRunning,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsClusterExample" resultType="java.lang.Long">
+    select count(*) from sdps_cluster
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update sdps_cluster
+    <set>
+      <if test="record.clusterId != null">
+        cluster_id = #{record.clusterId,jdbcType=INTEGER},
+      </if>
+      <if test="record.clusterPasswd != null">
+        cluster_passwd = #{record.clusterPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterName != null">
+        cluster_name = #{record.clusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterShowName != null">
+        cluster_show_name = #{record.clusterShowName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.storageResourceId != null">
+        storage_resource_id = #{record.storageResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.calcResourceId != null">
+        calc_resource_id = #{record.calcResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.clusterStatusId != null">
+        cluster_status_id = #{record.clusterStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="record.clusterSource != null">
+        cluster_source = #{record.clusterSource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterTypeId != null">
+        cluster_type_id = #{record.clusterTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.principalId != null">
+        principal_id = #{record.principalId,jdbcType=BIGINT},
+      </if>
+      <if test="record.isUse != null">
+        is_use = #{record.isUse,jdbcType=BIT},
+      </if>
+      <if test="record.clusterIp != null">
+        cluster_ip = #{record.clusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterPort != null">
+        cluster_port = #{record.clusterPort,jdbcType=INTEGER},
+      </if>
+      <if test="record.clusterAccount != null">
+        cluster_account = #{record.clusterAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterDescription != null">
+        cluster_description = #{record.clusterDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterHostConf != null">
+        cluster_host_conf = #{record.clusterHostConf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clusterConfSavePath != null">
+        cluster_conf_save_path = #{record.clusterConfSavePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.serverId != null">
+        server_id = #{record.serverId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createrId != null">
+        creater_id = #{record.createrId,jdbcType=BIGINT},
+      </if>
+      <if test="record.menderId != null">
+        mender_id = #{record.menderId,jdbcType=BIGINT},
+      </if>
+      <if test="record.remoteUrl != null">
+        remote_url = #{record.remoteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isRunning != null">
+        is_running = #{record.isRunning,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sdps_cluster
+    set cluster_id = #{record.clusterId,jdbcType=INTEGER},
+      cluster_passwd = #{record.clusterPasswd,jdbcType=VARCHAR},
+      cluster_name = #{record.clusterName,jdbcType=VARCHAR},
+      cluster_show_name = #{record.clusterShowName,jdbcType=VARCHAR},
+      storage_resource_id = #{record.storageResourceId,jdbcType=INTEGER},
+      calc_resource_id = #{record.calcResourceId,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      cluster_status_id = #{record.clusterStatusId,jdbcType=INTEGER},
+      cluster_source = #{record.clusterSource,jdbcType=VARCHAR},
+      cluster_type_id = #{record.clusterTypeId,jdbcType=INTEGER},
+      principal_id = #{record.principalId,jdbcType=BIGINT},
+      is_use = #{record.isUse,jdbcType=BIT},
+      cluster_ip = #{record.clusterIp,jdbcType=VARCHAR},
+      cluster_port = #{record.clusterPort,jdbcType=INTEGER},
+      cluster_account = #{record.clusterAccount,jdbcType=VARCHAR},
+      cluster_description = #{record.clusterDescription,jdbcType=VARCHAR},
+      cluster_host_conf = #{record.clusterHostConf,jdbcType=VARCHAR},
+      cluster_conf_save_path = #{record.clusterConfSavePath,jdbcType=VARCHAR},
+      server_id = #{record.serverId,jdbcType=INTEGER},
+      creater_id = #{record.createrId,jdbcType=BIGINT},
+      mender_id = #{record.menderId,jdbcType=BIGINT},
+      remote_url = #{record.remoteUrl,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      is_running = #{record.isRunning,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsCluster">
+    update sdps_cluster
+    <set>
+      <if test="clusterName != null">
+        cluster_name = #{clusterName,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterShowName != null">
+        cluster_show_name = #{clusterShowName,jdbcType=VARCHAR},
+      </if>
+      <if test="storageResourceId != null">
+        storage_resource_id = #{storageResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="calcResourceId != null">
+        calc_resource_id = #{calcResourceId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clusterStatusId != null">
+        cluster_status_id = #{clusterStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="clusterSource != null">
+        cluster_source = #{clusterSource,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterTypeId != null">
+        cluster_type_id = #{clusterTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="principalId != null">
+        principal_id = #{principalId,jdbcType=BIGINT},
+      </if>
+      <if test="isUse != null">
+        is_use = #{isUse,jdbcType=BIT},
+      </if>
+      <if test="clusterIp != null">
+        cluster_ip = #{clusterIp,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterPort != null">
+        cluster_port = #{clusterPort,jdbcType=INTEGER},
+      </if>
+      <if test="clusterAccount != null">
+        cluster_account = #{clusterAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterDescription != null">
+        cluster_description = #{clusterDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterHostConf != null">
+        cluster_host_conf = #{clusterHostConf,jdbcType=VARCHAR},
+      </if>
+      <if test="clusterConfSavePath != null">
+        cluster_conf_save_path = #{clusterConfSavePath,jdbcType=VARCHAR},
+      </if>
+      <if test="serverId != null">
+        server_id = #{serverId,jdbcType=INTEGER},
+      </if>
+      <if test="createrId != null">
+        creater_id = #{createrId,jdbcType=BIGINT},
+      </if>
+      <if test="menderId != null">
+        mender_id = #{menderId,jdbcType=BIGINT},
+      </if>
+      <if test="remoteUrl != null">
+        remote_url = #{remoteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isRunning != null">
+        is_running = #{isRunning,jdbcType=BIT},
+      </if>
+    </set>
+    where cluster_id = #{clusterId,jdbcType=INTEGER}
+      and cluster_passwd = #{clusterPasswd,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsCluster">
+    update sdps_cluster
+    set cluster_name = #{clusterName,jdbcType=VARCHAR},
+      cluster_show_name = #{clusterShowName,jdbcType=VARCHAR},
+      storage_resource_id = #{storageResourceId,jdbcType=INTEGER},
+      calc_resource_id = #{calcResourceId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      cluster_status_id = #{clusterStatusId,jdbcType=INTEGER},
+      cluster_source = #{clusterSource,jdbcType=VARCHAR},
+      cluster_type_id = #{clusterTypeId,jdbcType=INTEGER},
+      principal_id = #{principalId,jdbcType=BIGINT},
+      is_use = #{isUse,jdbcType=BIT},
+      cluster_ip = #{clusterIp,jdbcType=VARCHAR},
+      cluster_port = #{clusterPort,jdbcType=INTEGER},
+      cluster_account = #{clusterAccount,jdbcType=VARCHAR},
+      cluster_description = #{clusterDescription,jdbcType=VARCHAR},
+      cluster_host_conf = #{clusterHostConf,jdbcType=VARCHAR},
+      cluster_conf_save_path = #{clusterConfSavePath,jdbcType=VARCHAR},
+      server_id = #{serverId,jdbcType=INTEGER},
+      creater_id = #{createrId,jdbcType=BIGINT},
+      mender_id = #{menderId,jdbcType=BIGINT},
+      remote_url = #{remoteUrl,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_running = #{isRunning,jdbcType=BIT}
+    where cluster_id = #{clusterId,jdbcType=INTEGER}
+      and cluster_passwd = #{clusterPasswd,jdbcType=VARCHAR}
+  </update>
+</mapper>

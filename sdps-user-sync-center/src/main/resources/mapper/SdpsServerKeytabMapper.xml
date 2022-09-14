@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.usersync.mapper.SdpsServerKeytabMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpServerKeytab">
+		<result column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+		<result column="cluster_name" jdbcType="VARCHAR" property="clusterName" />
+		<result column="host" jdbcType="VARCHAR" property="host" />
+		<result column="principal_name" jdbcType="VARCHAR" property="principalName" />
+		<result column="principal_type" jdbcType="VARCHAR" property="principalType" />
+		<result column="keytab_file_name" jdbcType="VARCHAR" property="keytabFileName" />
+		<result column="keytab_file_path" jdbcType="VARCHAR" property="keytabFilePath" />
+		<result column="keytab_file_owner" jdbcType="VARCHAR" property="keytabFileOwner" />
+		<result column="component" jdbcType="VARCHAR" property="component" />
+	</resultMap>
+	<select id="selectKeytab" resultMap="BaseResultMap">
+		select
+			cluster_id,cluster_name,host,principal_name,principal_type,keytab_file_name,keytab_file_path,component,keytab_file_owner
+		from sdps_server_keytab
+		<where>
+			<if test="principalTypeList!=null and principalTypeList.size()>0">
+				and principal_type in
+				<foreach collection="principalTypeList" separator="," item="type" open="(" close=")">
+					#{type}
+				</foreach>
+			</if>
+			<if test="clusterId!=null">
+				and cluster_id = #{clusterId}
+			</if>
+			<if test="keytabName!=null and keytabName!=''">
+				and keytab_file_name like '%${keytabName}%'
+			</if>
+		</where>
+	</select>
+</mapper>

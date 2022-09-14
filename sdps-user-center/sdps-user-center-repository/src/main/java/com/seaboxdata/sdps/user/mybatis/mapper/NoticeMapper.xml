@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.NoticeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.user.mybatis.model.Notice">
+		<result column="rid" jdbcType="BIGINT" property="id" />
+		<result column="inter_time" jdbcType="BIGINT" property="interTime" />
+		<result column="inter_period" jdbcType="BIGINT" property="interPeriod" />
+		<result column="inter_user" jdbcType="VARCHAR" property="interUser" />
+	</resultMap>
+
+
+</mapper>

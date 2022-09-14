@@ -1,0 +1,30 @@
+server:
+  port: ${sdps.user.center.port}
+spring:
+  application:
+    name: ${sdps.user.center.serviceId}
+  cloud:
+    config:
+      name: ${config.global.name},${sdps.user.cfgName}
+      profile: ${active.profile.config}
+      discovery:
+        enabled: true
+        service-id: ${spring.cloud.config.serviceId}
+
+eureka:
+  instance:
+    hostname: ${eureka.instance.hostname}
+    port: ${eureka.instance.port}
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${security.user.name}:${security.user.password}@${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+    registry-fetch-interval-seconds: 5
+logger:
+  level:
+    com: INFO
+    org: INFO
+

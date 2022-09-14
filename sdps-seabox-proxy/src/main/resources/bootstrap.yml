@@ -1,0 +1,96 @@
+server:
+  port: ${sdps.seaboxProxy.center.port}
+spring:
+  application:
+    name: ${sdps.seaboxProxy.center.serviceId}
+  cloud:
+    config:
+      name: ${config.global.name},${sdps.seaboxProxy.cfgName}
+      profile: ${active.profile.config}
+      discovery:
+        enabled: true
+        service-id: ${spring.cloud.config.serviceId}
+
+eureka:
+  instance:
+    hostname: ${eureka.instance.hostname}
+    port: ${eureka.instance.port}
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${security.user.name}:${security.user.password}@${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+    registry-fetch-interval-seconds: 5
+logger:
+  level:
+    com: INFO
+    org: INFO
+
+#http设置
+http:
+  #最大连接数
+  maxTotal: 100
+  #并发数
+  defaultMaxPerRoute: 20
+  #连接超时时间
+  connectTimeout: 1000
+  #从连接池中获取到连接的最长时间
+  connectionRequestTimeout: 500
+  #数据传输的最长时间
+  socketTimeout: 10000
+  #提交请求前测试连接是否可用
+  staleConnectionCheckEnabled: true
+  #可用空闲连接过期时间,重用空闲连接时会先检查是否空闲时间超过这个时间，如果超过，释放socket重新建立
+  validateAfterInactivity: 3000000
+
+ranger:
+  user:
+    cudUrl: /service/xusers/secure/users
+    queryUrl: /service/xusers/users
+    queryUrlByUserName: /service/xusers/users/userName
+    queryUserByGroupName: /service/xusers/groupusers/groupName
+  group:
+    cudUrl: /service/xusers/secure/groups
+    queryUrl: /service/xusers/groups
+    deleteUserFromGroupUrl: /service/xusers/group/%s/user/%s
+    queryUrlByGroupName: /service/xusers/groups/groupName
+  policy:
+    addUrl: /service/plugins/policies
+    queryUrl: /service/plugins/policies/service/name
+#yarn resource manager url配置
+yarn:
+  resourceManager:
+    #集群 scheduler url链接
+    schedulerUrl: /ws/v1/cluster/scheduler
+    # 集群 app 列表 链接
+    appUrl: /ws/v1/cluster/apps
+    #集群 metrics资源列表 链接
+    metricsUrl: /ws/v1/cluster/metrics
+    #集群各个节点的资源信息链接
+    nodesUrl: /ws/v1/cluster/nodes
+    #通过用户筛选任务列表
+    listAppsByUser: /ws/v1/cluster/apps?user=
+    #通过任务状态筛选任务列表
+    listAppsByStates: /ws/v1/cluster/apps?states=
+    #通过用户和任务状态筛选任务列表
+    listAppsByUserAndStates: /ws/v1/cluster/apps?user=
+
+#ambari yarn队列更新接口
+ambari:
+  server:
+    updateYarn:
+      updateUrl: /api/v1/views/CAPACITY-SCHEDULER/versions/1.0.0/instances/AUTO_CS_INSTANCE/resources/scheduler/configuration
+      saveAndRefreshUrl: /api/v1/views/CAPACITY-SCHEDULER/versions/1.0.0/instances/AUTO_CS_INSTANCE/resources/scheduler/configuration/saveAndRefresh
+      saveAndRestartUrl: /api/v1/views/CAPACITY-SCHEDULER/versions/1.0.0/instances/AUTO_CS_INSTANCE/resources/scheduler/configuration/saveAndRestart
+
+#hdfs元数据临时存储目录
+metaData:
+  hdfs:
+    fsimageAndExtractLocalTempPath: /tmp/sdps/sdps-seabox-proxy/metaData/hdfs
+    fsimageAndExtractHdfsPath: /sdps/sdps-seabox-proxy/metaData/hdfs
+    tempPath: /tmp/sdps/sdps-seabox-proxy/metaData/hdfs/temp
+
+
+

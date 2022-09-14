@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsDatasourceMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.item.model.SdpsDatasource">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="create_user" jdbcType="VARCHAR" property="createUser" />
+		<result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+		<result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+		<result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="properties" jdbcType="VARCHAR" property="properties" />
+		<result column="system_init" jdbcType="BIT" property="systemInit" />
+		<result column="is_valid" jdbcType="BIT" property="isValid" />
+		<result column="is_visible" jdbcType="BIT" property="isVisible" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="config" jdbcType="VARCHAR" property="config" />
+	</resultMap>
+	<resultMap id="SelectDatasourceMap"
+		type="com.seaboxdata.sdps.item.dto.datasource.DataSourceDto">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="create_user" jdbcType="VARCHAR" property="createUser" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="properties" jdbcType="VARCHAR" property="properties" />
+		<result column="is_visible" jdbcType="BIT" property="isVisible" />
+		<result column="is_valid" jdbcType="BIT" property="isValid" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="cluster_show_name" jdbcType="VARCHAR" property="clusterShowName" />
+		<result column="config" jdbcType="VARCHAR" property="config" />
+		<result column="assItemId" jdbcType="VARCHAR" property="assItemId" />
+		<result column="assItemName" jdbcType="VARCHAR" property="assItemName" />
+		<result column="category" jdbcType="VARCHAR" property="category" />
+	</resultMap>
+	<select id="selectDatasource" resultMap="SelectDatasourceMap">
+		SELECT
+		sd.id,
+		sd.`name`,
+		sd.create_time,
+		sd.create_user,
+		sd.`desc`,
+		sd.properties,
+		sd.config,
+		sd.is_visible,
+		sd.cluster_id,
+		sc.cluster_name,
+		sc.cluster_show_name,
+		sd.type_id,
+		sdt.`name` as type,
+		sd.is_valid,
+		GROUP_CONCAT(
+		si.`name` ) as assItemName,
+		GROUP_CONCAT( si.id ) as assItemId,
+		sdt.category
+		FROM
+		sdps_datasource AS sd
+		INNER JOIN sdps_datasource_type
+		AS sdt ON sdt.id
+		= sd.type_id
+		LEFT JOIN datasource_item AS di ON
+		di.datasource_id =
+		sd.id
+		LEFT JOIN sdps_item AS si ON si.id = di.item_id
+		LEFT JOIN
+		sdps_cluster as sc on sd.cluster_id = sc.cluster_id
+		<where>
+			<if test="param != null">
+				<if test="param.name != null and param.name != ''">
+					and sd.name like '%${param.name}%'
+				</if>
+				<if test="param.typeId != null">
+					and sd.type_id = #{param.typeId}
+				</if>
+				<if test="param.itemId != null">
+					and si.id = #{param.itemId}
+				</if>
+				<if test="param.id != null">
+					and sd.id = #{param.id}
+				</if>
+				<if test="param.clusterId != null">
+					and sd.cluster_id = #{param.clusterId}
+				</if>
+				<if
+					test="param.dataPermissionSql != null and param.dataPermissionSql !=''">
+					and ${param.dataPermissionSql}
+				</if>
+			</if>
+		</where>
+		GROUP BY
+		sd.id
+		ORDER
+		BY sd.create_time desc
+	</select>
+
+	<select id="selectClusterIdAssItem"
+		resultType="com.seaboxdata.sdps.item.dto.datasource.DataSourceDto">
+		SELECT DISTINCT sr.cluster_id as clusterId from sdps_item as si INNER
+		JOIN
+		sdps_resources as sr on sr.item_id = si.id
+		<where>
+			si.id in
+			<if test="itemIds != null">
+				<foreach collection="itemIds" index="index" item="id" open="("
+					separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+	<select id="selectKerberosHive" resultType="STRING">
+		select sd.name
+		from sdps_datasource as sd inner join
+		sdps_datasource_type as sdt
+		on sdt.id = sd.type_id
+		where sd.is_valid = 1
+		and sdt.category='cluster'
+		and sdt.name = 'HIVE' and properties like
+		'%\'kerberos\':true%'
+		<if test="clusterIds!=null and clusterIds.size()>0">
+			and sd.cluster_id in
+			<foreach collection="clusterIds" item="clusterId" open="("
+				close=")" separator=",">
+				#{clusterId}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectHistogram"
+		resultType="com.seaboxdata.sdps.item.dto.datasource.DataSourceDto">
+		select date_format( create_time,
+		<choose>
+			<when test="request.dateType == 'year'">
+				'%Y-%m'
+			</when>
+			<when test="request.dateType == 'hour'">
+				'%Y-%m-%d %h'
+			</when>
+			<otherwise>
+				'%Y-%m-%d'
+			</otherwise>
+		</choose>
+		) as
+		`name`,count(1) as `value`
+		from
+		<if test="request.type == 'datasource'">
+			sdps_datasource
+		</if>
+		<if test="request.type == 'database'">
+			sdps_database
+		</if>
+		<if test="request.type == 'table'">
+			sdps_table
+		</if>
+		where create_time
+		BETWEEN request.startTime and
+		request.endTime GROUP BY
+		<choose>
+			<when test="request.dateType == 'year'">
+				month
+			</when>
+			<when test="request.dateType == 'hour'">
+				hour
+			</when>
+			<otherwise>
+				day
+			</otherwise>
+		</choose>
+		(create_time)
+	</select>
+</mapper>

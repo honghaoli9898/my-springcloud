@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsTableMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.item.model.SdpsTable">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="en_name" jdbcType="VARCHAR" property="enName" />
+		<result column="cn_name" jdbcType="VARCHAR" property="cnName" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="owner" jdbcType="BIGINT" property="owner" />
+		<result column="database_id" jdbcType="BIGINT" property="databaseId" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+		<result column="life_time" jdbcType="INTEGER" property="lifeTime" />
+		<result column="is_external" jdbcType="BIT" property="isExternal" />
+		<result column="bus_desc" jdbcType="VARCHAR" property="busDesc" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="senior" jdbcType="VARCHAR" property="senior" />
+		<result column="create_mode" jdbcType="BIT" property="createMode" />
+		<result column="field_sql" jdbcType="VARCHAR" property="fieldSql" />
+	</resultMap>
+	<resultMap id="SelectTableMap" type="com.seaboxdata.sdps.item.dto.table.TableDto">
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="en_name" jdbcType="VARCHAR" property="enName" />
+		<result column="cn_name" jdbcType="VARCHAR" property="cnName" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="owner" jdbcType="BIGINT" property="owner" />
+		<result column="database_id" jdbcType="BIGINT" property="databaseId" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+		<result column="life_time" jdbcType="INTEGER" property="lifeTime" />
+		<result column="is_external" jdbcType="BIT" property="isExternal" />
+		<result column="bus_desc" jdbcType="VARCHAR" property="busDesc" />
+		<result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+		<result column="senior" jdbcType="VARCHAR" property="senior" />
+		<result column="create_mode" jdbcType="BIT" property="createMode" />
+		<result column="field_sql" jdbcType="VARCHAR" property="fieldSql" />
+		<result column="assItemName" jdbcType="VARCHAR" property="assItemName" />
+		<result column="assItemIden" jdbcType="VARCHAR" property="assItemIden" />
+		<result column="database_id" jdbcType="BIGINT" property="databaseId" />
+		<result column="databaseName" jdbcType="VARCHAR" property="databaseName" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="datasourceId" jdbcType="BIGINT" property="datasourceId" />
+		<result column="datasourceName" jdbcType="VARCHAR" property="datasourceName" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+	</resultMap>
+	<select id="findTablesByExample" resultMap="SelectTableMap">
+		SELECT
+		st.*,
+		sd.`name` AS databaseName,
+		sd.`id` AS databaseId,
+		sdt.`name` AS type,
+		si.`name` AS assItemName,
+		si.iden AS assItemIden,
+		sds.`name` AS datasourceName,
+		sds.`id` AS datasourceId,
+		su.nickname,
+		su.username
+		FROM
+		sdps_table AS st
+		INNER JOIN sdps_item AS si ON
+		st.item_id = si.id
+		INNER JOIN sdps_database AS sd ON st.database_id =
+		sd.id
+		INNER JOIN sdps_datasource_type AS sdt ON st.type_id = sdt.id
+		INNER JOIN sdps_datasource as sds on (sds.cluster_id = sd.cluster_id)
+		INNER JOIN sys_user as su on su.id = st.owner
+		and(sds.type_id=sd.type_id)
+		<where>
+			<if test="param != null">
+				<if test="param.name != null and param.name != ''">
+					and st.en_name like '%${param.name}%'
+				</if>
+				<if test="param.typeId != null">
+					and st.type_id = #{param.typeId}
+				</if>
+				<if test="param.itemId != null">
+					and st.item_id = #{param.itemId}
+				</if>
+				<if test="param.id != null">
+					and st.id = #{param.id}
+				</if>
+				<if test="param.databaseId != null">
+					and st.database_id = #{param.databaseId}
+				</if>
+				<if
+					test="param.dataPermissionSql != null and param.dataPermissionSql !=''">
+					and ${param.dataPermissionSql}
+				</if>
+				<if test="param.isExternal != null">
+					and st.is_external = #{param.isExternal}
+				</if>
+			</if>
+		</where>
+		ORDER
+		BY st.update_time desc
+	</select>
+</mapper>

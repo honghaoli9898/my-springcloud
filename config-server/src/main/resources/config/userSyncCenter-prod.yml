@@ -1,0 +1,26 @@
+spring:    
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://10.1.3.113:3306/sdps-7.2?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+      druid:
+        filters: stat,slf4j,wall
+        
+mybatis-plus:
+  type-aliases-package: com.seaboxdata.sdps.common.core.model,com.seaboxdata.sdps.usersync.model
+  mapper-locations:
+    - classpath*:mapper/*.xml
+sdps:
+  usersync:
+    thread:
+      corePoolSize: 10
+      maxPoolSize: 20
+      queueCapacity: 10
+      threadNamePrefix: "UserSyncExecutor-"
+      blockingQueueSize: 100
+      queueNumber: 1

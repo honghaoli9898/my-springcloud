@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.seaboxProxy.mapper.SdpsMergeDataInfoMapper">
+  <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.framework.bean.merge.SdpsMergeDataInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+    <result column="submit_id" jdbcType="BIGINT" property="submitId" />
+    <result column="task_id" jdbcType="BIGINT" property="taskId" />
+    <result column="source_path" jdbcType="VARCHAR" property="sourcePath" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="merge_before_total_file_num" jdbcType="BIGINT" property="mergeBeforeTotalFileNum" />
+    <result column="merge_before_total_file_size" jdbcType="BIGINT" property="mergeBeforeTotalFileSize" />
+    <result column="merge_before_total_file_block_size" jdbcType="BIGINT" property="mergeBeforeTotalFileBlockSize" />
+    <result column="merge_before_total_small_file_num" jdbcType="BIGINT" property="mergeBeforeTotalSmallFileNum" />
+    <result column="merge_after_total_file_num" jdbcType="BIGINT" property="mergeAfterTotalFileNum" />
+    <result column="merge_after_total_file_size" jdbcType="BIGINT" property="mergeAfterTotalFileSize" />
+    <result column="merge_after_total_file_block_size" jdbcType="BIGINT" property="mergeAfterTotalFileBlockSize" />
+    <result column="merge_after_total_small_file_num" jdbcType="BIGINT" property="mergeAfterTotalSmallFileNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <select id="getCompleteMergeSmallFileSum" resultType="java.lang.Long">
+    SELECT sum(merge_before_total_small_file_num - merge_after_total_small_file_num) FROM sdps_merge_data_info WHERE cluster_id=#{clusterId}
+  </select>
+  <select id="getCompleteMergeSmallFileBlockSum" resultType="java.lang.Long">
+    SELECT sum(merge_before_total_file_block_size - merge_after_total_file_block_size) FROM sdps_merge_data_info WHERE cluster_id=#{clusterId}
+  </select>
+
+  <select id="getMergeFileNumTopN" resultType="com.seaboxdata.sdps.common.framework.bean.merge.SmallFileMergeNumRanking">
+    SELECT task_id,path,(merge_before_total_small_file_num - merge_after_total_small_file_num) as alreadyMergeNum
+    FROM sdps_merge_data_info
+    WHERE cluster_id = #{clusterId}
+    <![CDATA[AND DateDiff(NOW(),update_time) < #{inDay}]]>
+    AND (merge_before_total_small_file_num - merge_after_total_small_file_num) >= 0
+    order by alreadyMergeNum desc
+      limit #{topN}
+  </select>
+
+  <select id="getMergeFileBlockNumTopN" resultType="com.seaboxdata.sdps.common.framework.bean.merge.SmallFileMergeBlockSizeRanking">
+    SELECT task_id,path,(merge_before_total_file_block_size - merge_after_total_file_block_size) as alreadyMergeBlockSize
+    FROM sdps_merge_data_info
+    WHERE cluster_id = #{clusterId}
+    <![CDATA[AND DateDiff(NOW(),update_time) < #{inDay}]]>
+    AND (merge_before_total_file_block_size - merge_after_total_file_block_size) >= 0
+    order by alreadyMergeBlockSize desc
+      limit #{topN}
+  </select>
+
+</mapper>

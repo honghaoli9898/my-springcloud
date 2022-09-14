@@ -1,0 +1,9 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.core.feign.fallback.UserServiceFallbackFactory,\
+com.seaboxdata.sdps.common.core.lock.LockAspect,\
+com.seaboxdata.sdps.common.core.utils.SpringUtil,\
+com.seaboxdata.sdps.common.core.aspect.LimitAop,\
+com.seaboxdata.sdps.common.core.properties.KerberosProperties,\
+com.seaboxdata.sdps.common.core.properties.FileCryptoProperties,\
+com.seaboxdata.sdps.common.core.filter.LoginUserFilter
+#com.seaboxdata.sdps.common.core.config.StreamFilterConfig,\

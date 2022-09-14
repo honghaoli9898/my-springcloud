@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.seaboxdata.sdps.framework</groupId>
+		<artifactId>sdps-user-center</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<name>sdps-user-center-repository</name>
+	<artifactId>sdps-user-center-repository</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>db-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>common-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>log-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>common-utils</artifactId>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>mysql5</id>
+			<properties>
+				<dbType>mysql5</dbType>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</dependency>
+			</dependencies>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/java</directory>
+						<includes>
+							<include>**/*.xml</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+</project>

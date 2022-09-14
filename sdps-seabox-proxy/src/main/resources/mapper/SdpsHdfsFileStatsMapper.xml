@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.seaboxProxy.mapper.SdpsHdfsFileStatsMapper">
+  <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.framework.bean.HdfsFileStats">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="cluster_id" jdbcType="BIGINT" property="clusterId" />
+    <result column="cluster" jdbcType="VARCHAR" property="cluster" />
+    <result column="day_time" jdbcType="VARCHAR" property="dayTime" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="type_key" jdbcType="VARCHAR" property="typeKey" />
+    <result column="type_value_num" jdbcType="BIGINT" property="typeValueNum" />
+    <result column="type_value_size" jdbcType="BIGINT" property="typeValueSize" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+</mapper>

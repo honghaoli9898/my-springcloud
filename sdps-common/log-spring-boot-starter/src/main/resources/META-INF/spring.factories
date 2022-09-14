@@ -1,0 +1,11 @@
+org.springframework.context.ApplicationContextInitializer=\
+com.seaboxdata.sdps.common.log.config.TtlMDCAdapterInitializer
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.log.config.LogAutoConfigure,\
+com.seaboxdata.sdps.common.log.service.impl.LoggerAuditServiceImpl,\
+com.seaboxdata.sdps.common.log.service.impl.DbAuditServiceImpl,\
+com.seaboxdata.sdps.common.log.aspect.AuditLogAspect,\
+com.seaboxdata.sdps.common.log.aspect.RequestLogAspect,\
+com.seaboxdata.sdps.common.log.trace.WebTraceFilter,\
+com.seaboxdata.sdps.common.log.trace.FeignTraceInterceptor

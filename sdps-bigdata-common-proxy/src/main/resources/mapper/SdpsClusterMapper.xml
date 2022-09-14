@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsClusterMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.framework.bean.SdpsCluster">
+		<!-- WARNING - @mbg.generated -->
+		<id column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+		<result column="cluster_name" jdbcType="VARCHAR" property="clusterName" />
+		<result column="cluster_show_name" jdbcType="VARCHAR" property="clusterShowName" />
+		<result column="storage_resource_id" jdbcType="INTEGER"
+			property="storageResourceId" />
+		<result column="calc_resource_id" jdbcType="INTEGER" property="calcResourceId" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="cluster_status_id" jdbcType="INTEGER" property="clusterStatusId" />
+		<result column="cluster_source" jdbcType="VARCHAR" property="clusterSource" />
+		<result column="cluster_type_id" jdbcType="INTEGER" property="clusterTypeId" />
+		<result column="principal_id" jdbcType="BIGINT" property="principalId" />
+		<result column="is_use" jdbcType="BIT" property="isUse" />
+		<result column="cluster_ip" jdbcType="VARCHAR" property="clusterIp" />
+		<result column="cluster_port" jdbcType="INTEGER" property="clusterPort" />
+		<result column="cluster_account" jdbcType="VARCHAR" property="clusterAccount" />
+		<result column="cluster_passwd" jdbcType="VARCHAR" property="clusterPasswd" />
+		<result column="cluster_description" jdbcType="VARCHAR"
+			property="clusterDescription" />
+		<result column="cluster_host_conf" jdbcType="VARCHAR" property="clusterHostConf" />
+		<result column="cluster_conf_save_path" jdbcType="VARCHAR"
+			property="clusterConfSavePath" />
+		<result column="server_id" jdbcType="INTEGER" property="serverId" />
+
+		<result column="creater_id" jdbcType="BIGINT" property="createrId" />
+		<result column="mender_id" jdbcType="BIGINT" property="menderId" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="is_running" jdbcType="BOOLEAN" property="running" />
+		<result column="remote_url" jdbcType="VARCHAR" property="remoteUrl" />
+		<result column="kerberos" jdbcType="BIT" property="kerberos" />
+	</resultMap>
+
+	<!--查询集群类型 -->
+	<select id="queryClusterTypeByClusterId" resultType="java.lang.String">
+		select t2.cluster_type_en_name
+		from sdps_cluster_type t2
+		where t2.cluster_type_id = (
+		select t1.cluster_type_id from sdps_cluster t1 where t1.cluster_id =
+		#{clusterId})
+	</select>
+
+	<!--查询Ranger信息 -->
+	<select id="queryServerInfoByClusterId"
+		resultType="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		select t2.server_id,
+		t2.host,
+		t2.port,
+		t2.user,
+		t2.`passwd`
+		from sdps_server_info t2
+		where t2.server_id = (
+		select t1.server_id from sdps_cluster t1 where t1.cluster_id = #{clusterId})
+		and t2.type = #{type}
+	</select>
+
+</mapper>

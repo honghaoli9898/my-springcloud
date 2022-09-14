@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsAmbariInfoMapper">
+    <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.framework.bean.ambari.SdpsAmbariInfo">
+        <id column="ambari_id" jdbcType="INTEGER" property="ambariId"/>
+        <result column="ambari_host" jdbcType="VARCHAR" property="ambariHost"/>
+        <result column="ambari_port" jdbcType="VARCHAR" property="ambariPort"/>
+        <result column="ambari_admin_user" jdbcType="VARCHAR" property="ambariAdminUser"/>
+        <result column="ambari_admin_password" jdbcType="VARCHAR" property="ambariAdminUser"/>
+        <result column="cluster_id" jdbcType="INTEGER" property="clusterId"/>
+    </resultMap>
+
+    <!--查询集群ambari-server的信息-->
+
+    <select id="selectAmbariInfoById" resultType="com.seaboxdata.sdps.common.framework.bean.ambari.SdpsAmbariInfo">
+        select s1.ambari_id,s1.ambari_host,s1.ambari_port,s1.ambari_admin_user,s1.ambari_admin_password,s1.cluster_id
+        from sdps_ambari_info s1
+        where s1.cluster_id= #{clusterId}
+    </select>
+
+
+</mapper>

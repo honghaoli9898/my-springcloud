@@ -1,0 +1,63 @@
+server:
+  port: 8083
+
+# spring配置
+spring:
+  redis:
+    host: 39.96.32.146
+    port: 6379
+    password: 1qaz!QAZ
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+        timeout: 3000
+        store-type: redis
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://39.96.32.146:3306/coll_system_db?characterEncoding=UTF-8&useSSL=true
+    username: dev
+    password: zaq1XSW2!@@
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB #限制单个文件的最大值
+      max-request-size: 10MB #限制上传的多个文件的总大小
+      file-size-threshold: 1MB
+      #location: /
+
+# 日志配置
+logging:
+  level:
+    org: INFO
+    com.codingapi.txlcn: debug
+tx-lcn:
+  manager:
+    host: 127.0.0.1
+    port: 8070
+    heart-time: 60000
+    dtx-time: 100000
+    admin-key: 123456
+    concurrent-level: 40
+    dtx-lock-time: ${tx-lcn.manager.dtx-time}
+    seq-len: 12
+    ex-url-enabled: false
+    ex-url: /provider/email-to/1130260281@qq.com
+  message:
+    netty.attr-delay-time=${tx-lcn.manager.dtx-time}
+
+  logger:
+    enabled: true
+    driver-class-name: ${spring.datasource.driver-class-name}
+    jdbc-url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    

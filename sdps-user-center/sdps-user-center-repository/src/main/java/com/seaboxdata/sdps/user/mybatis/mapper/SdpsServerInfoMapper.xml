@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SdpsServerInfoMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="server_id" jdbcType="INTEGER" property="serverId" />
+		<result column="host" jdbcType="VARCHAR" property="host" />
+		<result column="port" jdbcType="VARCHAR" property="port" />
+		<result column="user" jdbcType="VARCHAR" property="user" />
+		<result column="passwd" jdbcType="VARCHAR" property="rangerAdminPasswd" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="domain" jdbcType="VARCHAR" property="domain" />
+	</resultMap>
+	<select id="selectClusterIdHasRanger" resultType="java.lang.Integer">
+		select sc.cluster_id
+		from sdps_cluster as sc
+		inner join sdps_server_info as ssi
+		on ssi.server_id = sc.server_id
+		where sc.server_id is not null
+		and ssi.type = 'R' and sc.is_running = '1'
+	</select>
+
+	<select id="selectServerInfo"
+		resultType="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		SELECT t2.server_id,
+		t2.HOST,
+		t2.PORT,
+		t2.USER,
+		t2.`passwd`,
+		t2.login_url,
+		sct.cluster_type_en_name as cluster_type
+		FROM sdps_server_info t2
+		INNER JOIN
+		sdps_cluster AS sc ON t2.server_id = sc.server_id
+		INNER JOIN
+		sdps_cluster_type sct ON sct.cluster_type_id =
+		sc.cluster_type_id
+		WHERE sc.cluster_id = #{clusterId}
+		AND t2.type = #{type}
+	</select>
+</mapper>

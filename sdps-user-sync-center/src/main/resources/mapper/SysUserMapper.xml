@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.usersync.mapper.SysUserMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.core.model.SysUser">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="sex" jdbcType="BIT" property="sex" />
+		<result column="enabled" jdbcType="BIT" property="enabled" />
+		<result column="is_del" jdbcType="BIT" property="isDel" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="sync_user_status" jdbcType="VARCHAR" property="syncUserStatus" />
+		<result column="sync_cluster_ids" jdbcType="VARCHAR" property="syncClusterIds" />
+	</resultMap>
+
+</mapper>

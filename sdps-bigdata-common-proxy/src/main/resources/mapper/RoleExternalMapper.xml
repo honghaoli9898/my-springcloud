@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.RoleExternalMapper">
+    <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.core.model.UrlRelationVo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="external_id" jdbcType="INTEGER" property="externalId"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="role_id" jdbcType="INTEGER" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="system_name" jdbcType="VARCHAR" property="systemName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="verify_status" jdbcType="INTEGER" property="verifyStatus"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <!--查询链接关系-->
+    <select id="getUrlRelation" resultType="com.seaboxdata.sdps.common.core.model.UrlRelationVo">
+        SELECT
+            t1.id,
+            t1.username,
+            t2.role_id,
+            t2.role_name,
+            t2.system_name,
+            t1.description,
+            t1.create_time
+        FROM
+            sdps_role_external t1
+            LEFT JOIN external_role t2 ON t1.external_id = t2.id
+            <where>
+                del_status = 0
+                <if test="null != urlId and ''!= urlId">
+                    and url_id = #{urlId}
+                </if>
+                <if test="null != username and ''!= username">
+                    and username LIKE CONCAT('%', #{username}, '%')
+                </if>
+                <if test="null != roleId and '' != roleId">
+                    and role_id = #{roleId}
+                </if>
+            </where>
+    </select>
+
+
+    <!--查询所有链接-->
+    <select id="getAllUrl" resultType="com.seaboxdata.sdps.common.core.model.UrlVo">
+        SELECT
+        t1.id,
+        t1.username,
+        t1.verify_status,
+        t2.NAME,
+        t2.url,
+        t1.description,
+        t1.create_time
+        FROM
+        sdps_role_external t1
+        LEFT JOIN sdps_url t2 ON t1.url_id = t2.id
+        <where>
+            del_status = 0
+            <if test="null != verifyStatus">
+                and t1.verify_status = #{verifyStatus}
+            </if>
+            <if test="null != username and ''!= username">
+                and t1.creator = #{username}
+            </if>
+            <if test="null != name and ''!= name">
+                and name LIKE CONCAT('%', #{name}, '%')
+            </if>
+
+        </where>
+    </select>
+
+
+
+</mapper>

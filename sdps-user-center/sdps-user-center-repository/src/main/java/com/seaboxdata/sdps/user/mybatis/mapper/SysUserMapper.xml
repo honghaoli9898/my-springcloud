@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SysUserMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.core.model.SysUser">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="sex" jdbcType="BIT" property="sex" />
+		<result column="enabled" jdbcType="BIT" property="enabled" />
+		<result column="is_del" jdbcType="BIT" property="isDel" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="sync_user_status" jdbcType="VARCHAR" property="syncUserStatus" />
+		<result column="sync_cluster_ids" jdbcType="VARCHAR" property="syncClusterIds" />
+	</resultMap>
+	<select id="findUsersInfo" resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT
+		ur.username,
+		ur.nickname,
+		ur.email,
+		ur.enabled,
+		ur.id,
+		ur.create_time,
+		ur.`desc`,
+		ur.sex,
+		ur.sync_user_status,
+		ur.sync_cluster_ids,
+		GROUP_CONCAT(DISTINCT st.name) as tenants,
+		GROUP_CONCAT( DISTINCT st.id ) AS tenantIds
+		FROM
+		sys_user AS ur
+		LEFT JOIN user_role_item as uri on uri.user_id = ur.id
+		LEFT JOIN
+		sdps_tenant as st on st.id = uri.tenant_id
+		<where>
+			<if test="user!=null ">
+				<if test="user.username != null and user.username != ''">
+					and ur.username like '%${user.username}%'
+				</if>
+				<if test="user.nickname != null and user.nickname != ''">
+					and ur.nickname like '%${user.nickname}%'
+				</if>
+				<if test="user.id != null ">
+					and ur.id = #{user.id}
+				</if>
+			</if>
+			and is_del = '0'
+		</where>
+		GROUP BY ur.id
+		order by ur.create_time desc
+	</select>
+
+	<select id="findUsersByExample" resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT
+		ur.username,
+		ur.nickname,
+		ur.email,
+		ur.enabled,
+		ur.id,
+		ur.create_time,
+		ur.`desc`,
+		ur.sex,
+		ur.sync_user_status,
+		ur.sync_cluster_ids
+		FROM
+		sys_user AS ur
+		<where>
+			<if test="user!=null ">
+				<if test="user.username != null and user.username != ''">
+					and ur.username like '%${user.username}%'
+				</if>
+				<if test="user.nickname != null and user.nickname != ''">
+					and ur.nickname like '%${user.nickname}%'
+				</if>
+				<if test="user.id != null ">
+					and ur.id = #{user.id}
+				</if>
+			</if>
+			and is_del = '0'
+		</where>
+		order by ur.create_time desc
+	</select>
+
+	<select id="findUserInfo" parameterType="java.lang.String"
+		resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT DISTINCT
+		u.id,
+		u.create_time,
+		u.default_item_id,
+		u.email,
+		u.`desc`,
+		u.enabled,
+		u.head_img_url,
+		u.mobile,
+		u.nickname,
+		u.organ_info,
+		u.sex,
+		u.is_del,
+		u.username,
+		u.`NAME`
+		FROM
+		(
+		SELECT
+		ur.id,
+		ur.create_time,
+		ur.default_item_id,
+		ur.email,
+		ur.`desc`,
+		ur.enabled,
+		ur.head_img_url,
+		ur.mobile,
+		ur.nickname,
+		ur.organ_info,
+		ur.sex,
+		ur.is_del,
+		ur.username,
+		role.`name`
+		FROM
+		sys_user AS ur
+		LEFT JOIN
+		sys_user_role_item AS uri ON
+		ur.id =
+		uri.user_id
+		LEFT JOIN sys_role AS
+		role ON uri.role_id = role.id
+		<where>
+			<if test="username != null and username != ''">
+				and ur.nickname like '%${user.username}%'
+			</if>
+		</where>
+		UNION
+		ALL
+		SELECT
+		ur.id,
+		ur.create_time,
+		ur.default_item_id,
+		ur.email,
+		ur.`desc`,
+		ur.enabled,
+		ur.head_img_url,
+		ur.mobile,
+		ur.nickname,
+		ur.organ_info,
+		ur.sex,
+		ur.is_del,
+		ur.username,
+		role.`name`
+		FROM
+		sys_user AS
+		ur
+		LEFT JOIN sys_user_group AS ug ON
+		ur.id =
+		ug.user_id
+		LEFT JOIN
+		role_group_item AS rgi ON rgi.group_id =
+		ug.group_id
+		LEFT JOIN
+		sys_role
+		AS role ON role.id = rgi.role_id
+		<where>
+			<if test="username != null and username != ''">
+				and ur.nickname like '%${user.username}%'
+			</if>
+		</where>
+		) AS u
+	</select>
+
+	<resultMap type="com.seaboxdata.sdps.user.mybatis.dto.role.RoleDto"
+		id="itemRoleResultMap">
+		<result column="itemId" jdbcType="BIGINT" property="itemId" />
+		<result column="itemName" jdbcType="VARCHAR" property="itemName" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<collection property="roles"
+			resultMap="com.seaboxdata.sdps.user.mybatis.mapper.SysRoleMapper.BaseResultMap"
+			columnPrefix="role_">
+		</collection>
+	</resultMap>
+
+	<select id="findGroupByUser">
+		SELECT distinct
+		gp.*
+		FROM
+		sys_user_group AS ug
+		INNER JOIN sys_group AS
+		gp
+		ON gp.id = ug.group_id
+		where ug.user_id = #{id}
+		<if test="groupName != null and groupName != ''">
+			and gp.name like '%${groupName}%'
+		</if>
+	</select>
+
+	<select id="findUserRolesByUserIds" parameterType="java.lang.Long"
+		resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT
+		su.id,su.username,su.nickname,su.sex,su.email,GROUP_CONCAT(distinct
+		sr.`code`)
+		as userRoles
+		FROM
+		sys_user AS su
+		INNER JOIN user_role_item AS
+		uri ON
+		su.id =
+		uri.user_id
+		INNER JOIN sys_role as sr on sr.id =
+		uri.role_id
+		where
+		su.id in
+		<foreach collection="userIds" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+		group by su.id
+	</select>
+	<select id="selectRolesByUserId" parameterType="java.lang.Long"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.user.UserDto">
+		SELECT
+		su.id,
+		su.username,
+		su.nickname,
+		sr.id as roleId,
+		sr.`name` as roleName,
+		sr.type,
+		si.`name` AS itemName,
+		uri.tenant_id,
+		uri.item_id,
+		st.`name` AS
+		tenantName from sys_user AS su
+		INNER JOIN
+		user_role_item AS uri ON
+		uri.user_id = su.id
+		INNER JOIN
+		sys_role AS sr ON
+		sr.id = uri.role_id
+		LEFT JOIN sdps_item AS si ON
+		si.id = uri.item_id
+		LEFT JOIN sdps_tenant
+		AS st ON st.id = uri.tenant_id
+		WHERE
+		su.id =
+		#{userId}
+	</select>
+</mapper>

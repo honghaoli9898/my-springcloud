@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.job.admin.dao.SdpsTaskInfoDao">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="submit_id" jdbcType="BIGINT" property="submitId" />
+		<result column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+		<result column="cluster_name" jdbcType="VARCHAR" property="clusterName" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="yarn_app_id" jdbcType="VARCHAR" property="yarnAppId" />
+		<result column="yarn_app_name" jdbcType="VARCHAR" property="yarnAppName" />
+		<result column="yarn_queue" jdbcType="VARCHAR" property="yarnQueue" />
+		<result column="yarn_tracking_url" jdbcType="VARCHAR" property="yarnTrackingUrl" />
+		<result column="application_type" jdbcType="VARCHAR" property="applicationType" />
+		<result column="xxl_log_id" jdbcType="BIGINT" property="xxlLogId" />
+		<result column="xxl_job_id" jdbcType="BIGINT" property="xxlJobId" />
+		<result column="shell_path" jdbcType="VARCHAR" property="shellPath" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="ext_0" jdbcType="VARCHAR" property="ext0" />
+		<result column="ext_1" jdbcType="VARCHAR" property="ext1" />
+		<result column="ext_2" jdbcType="VARCHAR" property="ext2" />
+		<result column="ext_3" jdbcType="VARCHAR" property="ext3" />
+		<result column="ext_4" jdbcType="VARCHAR" property="ext4" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		<result column="shell_context" jdbcType="LONGVARCHAR" property="shellContext" />
+	</resultMap>
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		id, submit_id, cluster_id, cluster_name, user_name, yarn_app_id, yarn_app_name, yarn_queue,
+		yarn_tracking_url, application_type, xxl_log_id, xxl_job_id, shell_path, create_time,
+		update_time, ext_0, ext_1, ext_2, ext_3, ext_4
+	</sql>
+	<sql id="Blob_Column_List">
+		shell_context
+	</sql>
+	<select id="selectByExampleWithBLOBs" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfoExample" resultMap="ResultMapWithBLOBs">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from sdps_task_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfoExample" resultMap="BaseResultMap">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from sdps_task_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from sdps_task_info
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from sdps_task_info
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<delete id="deleteByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfoExample">
+		delete from sdps_task_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into sdps_task_info (submit_id, cluster_id, cluster_name,
+		user_name, yarn_app_id, yarn_app_name,
+		yarn_queue, yarn_tracking_url, application_type,
+		xxl_log_id, xxl_job_id, shell_path,
+		create_time, update_time, ext_0,
+		ext_1, ext_2, ext_3, ext_4,
+		shell_context)
+		values (#{submitId,jdbcType=BIGINT}, #{clusterId,jdbcType=INTEGER}, #{clusterName,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR}, #{yarnAppId,jdbcType=VARCHAR}, #{yarnAppName,jdbcType=VARCHAR},
+		#{yarnQueue,jdbcType=VARCHAR}, #{yarnTrackingUrl,jdbcType=VARCHAR}, #{applicationType,jdbcType=VARCHAR},
+		#{xxlLogId,jdbcType=BIGINT}, #{xxlJobId,jdbcType=BIGINT}, #{shellPath,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{ext0,jdbcType=VARCHAR},
+		#{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR}, #{ext4,jdbcType=VARCHAR},
+		#{shellContext,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into sdps_task_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="submitId != null">
+				submit_id,
+			</if>
+			<if test="clusterId != null">
+				cluster_id,
+			</if>
+			<if test="clusterName != null">
+				cluster_name,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="yarnAppId != null">
+				yarn_app_id,
+			</if>
+			<if test="yarnAppName != null">
+				yarn_app_name,
+			</if>
+			<if test="yarnQueue != null">
+				yarn_queue,
+			</if>
+			<if test="yarnTrackingUrl != null">
+				yarn_tracking_url,
+			</if>
+			<if test="applicationType != null">
+				application_type,
+			</if>
+			<if test="xxlLogId != null">
+				xxl_log_id,
+			</if>
+			<if test="xxlJobId != null">
+				xxl_job_id,
+			</if>
+			<if test="shellPath != null">
+				shell_path,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="ext0 != null">
+				ext_0,
+			</if>
+			<if test="ext1 != null">
+				ext_1,
+			</if>
+			<if test="ext2 != null">
+				ext_2,
+			</if>
+			<if test="ext3 != null">
+				ext_3,
+			</if>
+			<if test="ext4 != null">
+				ext_4,
+			</if>
+			<if test="shellContext != null">
+				shell_context,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="submitId != null">
+				#{submitId,jdbcType=BIGINT},
+			</if>
+			<if test="clusterId != null">
+				#{clusterId,jdbcType=INTEGER},
+			</if>
+			<if test="clusterName != null">
+				#{clusterName,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnAppId != null">
+				#{yarnAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnAppName != null">
+				#{yarnAppName,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnQueue != null">
+				#{yarnQueue,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnTrackingUrl != null">
+				#{yarnTrackingUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationType != null">
+				#{applicationType,jdbcType=VARCHAR},
+			</if>
+			<if test="xxlLogId != null">
+				#{xxlLogId,jdbcType=BIGINT},
+			</if>
+			<if test="xxlJobId != null">
+				#{xxlJobId,jdbcType=BIGINT},
+			</if>
+			<if test="shellPath != null">
+				#{shellPath,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ext0 != null">
+				#{ext0,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				#{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				#{ext3,jdbcType=VARCHAR},
+			</if>
+			<if test="ext4 != null">
+				#{ext4,jdbcType=VARCHAR},
+			</if>
+			<if test="shellContext != null">
+				#{shellContext,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfoExample" resultType="java.lang.Long">
+		select count(*) from sdps_task_info
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update sdps_task_info
+		<set>
+			<if test="record.id != null">
+				id = #{record.id,jdbcType=BIGINT},
+			</if>
+			<if test="record.submitId != null">
+				submit_id = #{record.submitId,jdbcType=BIGINT},
+			</if>
+			<if test="record.clusterId != null">
+				cluster_id = #{record.clusterId,jdbcType=INTEGER},
+			</if>
+			<if test="record.clusterName != null">
+				cluster_name = #{record.clusterName,jdbcType=VARCHAR},
+			</if>
+			<if test="record.userName != null">
+				user_name = #{record.userName,jdbcType=VARCHAR},
+			</if>
+			<if test="record.yarnAppId != null">
+				yarn_app_id = #{record.yarnAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="record.yarnAppName != null">
+				yarn_app_name = #{record.yarnAppName,jdbcType=VARCHAR},
+			</if>
+			<if test="record.yarnQueue != null">
+				yarn_queue = #{record.yarnQueue,jdbcType=VARCHAR},
+			</if>
+			<if test="record.yarnTrackingUrl != null">
+				yarn_tracking_url = #{record.yarnTrackingUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="record.applicationType != null">
+				application_type = #{record.applicationType,jdbcType=VARCHAR},
+			</if>
+			<if test="record.xxlLogId != null">
+				xxl_log_id = #{record.xxlLogId,jdbcType=BIGINT},
+			</if>
+			<if test="record.xxlJobId != null">
+				xxl_job_id = #{record.xxlJobId,jdbcType=BIGINT},
+			</if>
+			<if test="record.shellPath != null">
+				shell_path = #{record.shellPath,jdbcType=VARCHAR},
+			</if>
+			<if test="record.createTime != null">
+				create_time = #{record.createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.updateTime != null">
+				update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.ext0 != null">
+				ext_0 = #{record.ext0,jdbcType=VARCHAR},
+			</if>
+			<if test="record.ext1 != null">
+				ext_1 = #{record.ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="record.ext2 != null">
+				ext_2 = #{record.ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="record.ext3 != null">
+				ext_3 = #{record.ext3,jdbcType=VARCHAR},
+			</if>
+			<if test="record.ext4 != null">
+				ext_4 = #{record.ext4,jdbcType=VARCHAR},
+			</if>
+			<if test="record.shellContext != null">
+				shell_context = #{record.shellContext,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExampleWithBLOBs" parameterType="map">
+		update sdps_task_info
+		set id = #{record.id,jdbcType=BIGINT},
+		submit_id = #{record.submitId,jdbcType=BIGINT},
+		cluster_id = #{record.clusterId,jdbcType=INTEGER},
+		cluster_name = #{record.clusterName,jdbcType=VARCHAR},
+		user_name = #{record.userName,jdbcType=VARCHAR},
+		yarn_app_id = #{record.yarnAppId,jdbcType=VARCHAR},
+		yarn_app_name = #{record.yarnAppName,jdbcType=VARCHAR},
+		yarn_queue = #{record.yarnQueue,jdbcType=VARCHAR},
+		yarn_tracking_url = #{record.yarnTrackingUrl,jdbcType=VARCHAR},
+		application_type = #{record.applicationType,jdbcType=VARCHAR},
+		xxl_log_id = #{record.xxlLogId,jdbcType=BIGINT},
+		xxl_job_id = #{record.xxlJobId,jdbcType=BIGINT},
+		shell_path = #{record.shellPath,jdbcType=VARCHAR},
+		create_time = #{record.createTime,jdbcType=TIMESTAMP},
+		update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+		ext_0 = #{record.ext0,jdbcType=VARCHAR},
+		ext_1 = #{record.ext1,jdbcType=VARCHAR},
+		ext_2 = #{record.ext2,jdbcType=VARCHAR},
+		ext_3 = #{record.ext3,jdbcType=VARCHAR},
+		ext_4 = #{record.ext4,jdbcType=VARCHAR},
+		shell_context = #{record.shellContext,jdbcType=LONGVARCHAR}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update sdps_task_info
+		set id = #{record.id,jdbcType=BIGINT},
+		submit_id = #{record.submitId,jdbcType=BIGINT},
+		cluster_id = #{record.clusterId,jdbcType=INTEGER},
+		cluster_name = #{record.clusterName,jdbcType=VARCHAR},
+		user_name = #{record.userName,jdbcType=VARCHAR},
+		yarn_app_id = #{record.yarnAppId,jdbcType=VARCHAR},
+		yarn_app_name = #{record.yarnAppName,jdbcType=VARCHAR},
+		yarn_queue = #{record.yarnQueue,jdbcType=VARCHAR},
+		yarn_tracking_url = #{record.yarnTrackingUrl,jdbcType=VARCHAR},
+		application_type = #{record.applicationType,jdbcType=VARCHAR},
+		xxl_log_id = #{record.xxlLogId,jdbcType=BIGINT},
+		xxl_job_id = #{record.xxlJobId,jdbcType=BIGINT},
+		shell_path = #{record.shellPath,jdbcType=VARCHAR},
+		create_time = #{record.createTime,jdbcType=TIMESTAMP},
+		update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+		ext_0 = #{record.ext0,jdbcType=VARCHAR},
+		ext_1 = #{record.ext1,jdbcType=VARCHAR},
+		ext_2 = #{record.ext2,jdbcType=VARCHAR},
+		ext_3 = #{record.ext3,jdbcType=VARCHAR},
+		ext_4 = #{record.ext4,jdbcType=VARCHAR}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		update sdps_task_info
+		<set>
+			<if test="submitId != null">
+				submit_id = #{submitId,jdbcType=BIGINT},
+			</if>
+			<if test="clusterId != null">
+				cluster_id = #{clusterId,jdbcType=INTEGER},
+			</if>
+			<if test="clusterName != null">
+				cluster_name = #{clusterName,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnAppId != null">
+				yarn_app_id = #{yarnAppId,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnAppName != null">
+				yarn_app_name = #{yarnAppName,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnQueue != null">
+				yarn_queue = #{yarnQueue,jdbcType=VARCHAR},
+			</if>
+			<if test="yarnTrackingUrl != null">
+				yarn_tracking_url = #{yarnTrackingUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="applicationType != null">
+				application_type = #{applicationType,jdbcType=VARCHAR},
+			</if>
+			<if test="xxlLogId != null">
+				xxl_log_id = #{xxlLogId,jdbcType=BIGINT},
+			</if>
+			<if test="xxlJobId != null">
+				xxl_job_id = #{xxlJobId,jdbcType=BIGINT},
+			</if>
+			<if test="shellPath != null">
+				shell_path = #{shellPath,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ext0 != null">
+				ext_0 = #{ext0,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+			<if test="ext4 != null">
+				ext_4 = #{ext4,jdbcType=VARCHAR},
+			</if>
+			<if test="shellContext != null">
+				shell_context = #{shellContext,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		update sdps_task_info
+		set submit_id = #{submitId,jdbcType=BIGINT},
+		cluster_id = #{clusterId,jdbcType=INTEGER},
+		cluster_name = #{clusterName,jdbcType=VARCHAR},
+		user_name = #{userName,jdbcType=VARCHAR},
+		yarn_app_id = #{yarnAppId,jdbcType=VARCHAR},
+		yarn_app_name = #{yarnAppName,jdbcType=VARCHAR},
+		yarn_queue = #{yarnQueue,jdbcType=VARCHAR},
+		yarn_tracking_url = #{yarnTrackingUrl,jdbcType=VARCHAR},
+		application_type = #{applicationType,jdbcType=VARCHAR},
+		xxl_log_id = #{xxlLogId,jdbcType=BIGINT},
+		xxl_job_id = #{xxlJobId,jdbcType=BIGINT},
+		shell_path = #{shellPath,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		ext_0 = #{ext0,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2 = #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR},
+		ext_4 = #{ext4,jdbcType=VARCHAR},
+		shell_context = #{shellContext,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.seaboxdata.sdps.job.admin.core.model.SdpsTaskInfo">
+		update sdps_task_info
+		set submit_id = #{submitId,jdbcType=BIGINT},
+		cluster_id = #{clusterId,jdbcType=INTEGER},
+		cluster_name = #{clusterName,jdbcType=VARCHAR},
+		user_name = #{userName,jdbcType=VARCHAR},
+		yarn_app_id = #{yarnAppId,jdbcType=VARCHAR},
+		yarn_app_name = #{yarnAppName,jdbcType=VARCHAR},
+		yarn_queue = #{yarnQueue,jdbcType=VARCHAR},
+		yarn_tracking_url = #{yarnTrackingUrl,jdbcType=VARCHAR},
+		application_type = #{applicationType,jdbcType=VARCHAR},
+		xxl_log_id = #{xxlLogId,jdbcType=BIGINT},
+		xxl_job_id = #{xxlJobId,jdbcType=BIGINT},
+		shell_path = #{shellPath,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		ext_0 = #{ext0,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2 = #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR},
+		ext_4 = #{ext4,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

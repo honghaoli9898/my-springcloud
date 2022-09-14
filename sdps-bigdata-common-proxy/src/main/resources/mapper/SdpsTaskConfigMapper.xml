@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsTaskConfigMapper">
+    <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.framework.bean.task.SdpsTaskConfig">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="cluster_type_id" jdbcType="INTEGER" property="clusterTypeId"/>
+        <result column="task_type" jdbcType="VARCHAR" property="taskType"/>
+        <result column="arg_key" jdbcType="VARCHAR" property="argKey"/>
+        <result column="arg_value" jdbcType="VARCHAR" property="argValue"/>
+        <result column="arg_desc" jdbcType="VARCHAR" property="argDesc"/>
+    </resultMap>
+
+    <!--查询Ranger信息-->
+    <select id="queryTaskConfByClusterTypeAndTaskType"
+            resultType="com.seaboxdata.sdps.common.framework.bean.task.TaskConfig">
+        select id, cluster_type_id, task_type, arg_key, arg_value, arg_desc
+        from sdps_task_config
+        where task_type = #{taskType}
+          and cluster_type_id =
+              (select cluster_type_id from sdps_cluster_type where cluster_type_en_name = #{cluster_type_en_name})
+    </select>
+
+</mapper>

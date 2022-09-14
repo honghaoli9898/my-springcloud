@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsItemMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsItem">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="iden" jdbcType="VARCHAR" property="iden" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="enabled" jdbcType="BIT" property="enabled" />
+		<result column="is_security" jdbcType="BIT" property="isSecurity" />
+		<result column="tenant_id" jdbcType="VARCHAR" property="tenantId" />
+	</resultMap>
+	<select id="findItemsByExample" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		item.id,
+		item.NAME,
+		item.iden,
+		item.tenant_id as tenantId,
+		item.create_time AS createTime,
+		str.ass_cluster_id AS clusterId,
+		item.`desc`,
+		str.ass_cluster_name AS clusterName,
+		item.is_security AS isSecurity,
+		st.`name` as tenantName
+		FROM
+		sdps_item AS item
+		LEFT JOIN sdps_tenant_resource AS str ON item.id = str.item_id
+		LEFT JOIN sdps_tenant as st on item.tenant_id = st.id
+		<where>
+			<if test="item != null">
+				<if test="item.id != null">
+					and item.id = #{item.id}
+				</if>
+				<if test="item.startTime != null">
+					and item.create_time &gt;= #{item.startTime}
+				</if>
+				<if test="item.endTime != null">
+					and item.create_time &lt;= #{item.endTime}
+				</if>
+				<if test="item.name != null and item.name != ''">
+					and item.name like '%${item.name}%'
+				</if>
+				<if test="item.clusterId != null ">
+					and str.ass_cluster_id = #{item.clusterId}
+				</if>
+				<if
+					test="item.dataPermissionSql != null and item.dataPermissionSql != ''">
+					and ${item.dataPermissionSql}
+				</if>
+				<if test="item.clusterIdNotNull">
+					and str.ass_cluster_id is not null
+				</if>
+			</if>
+		</where>
+		ORDER BY
+		item.create_time DESC
+	</select>
+
+	<select id="findItemManagerByItemIds" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		item.id,user.nickname as name,user.id as userId
+		FROM
+		sdps_item AS
+		item
+		INNER JOIN
+		user_role_item AS uri ON item.id = uri.item_id
+		INNER JOIN
+		sys_user as
+		user on uri.user_id = user.id
+		where item.id in
+		<foreach collection="ids" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+		and uri.role_id = #{roleId}
+	</select>
+
+	<select id="findItemMembers" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		distinct
+		ur.username as name,
+		ur.id as userId,
+		ur.create_time as
+		createTime,
+		ur.nickname
+		FROM
+		sys_user AS ur
+		INNER JOIN
+		user_role_item AS
+		uri ON
+		ur.id =
+		uri.user_id
+		WHERE
+		uri.item_id = #{request.id}
+		<if test="request.name != null and request.name != ''">
+			and ur.nickname like '%${request.name}%'
+		</if>
+	</select>
+	<select id="findItemGroups" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		distinct sg.id,sg.`name`,sg.code as iden,sg.create_time as
+		createTime
+		FROM
+		role_group_item AS rgi
+		INNER
+		JOIN sys_group AS
+		sg ON sg.id
+		=
+		rgi.group_id
+		where rgi.item_id =
+		#{request.id}
+		<if test="request.name != null and request.name != ''">
+			and sg.name like '%${request.name}%'
+		</if>
+	</select>
+
+
+	<select id="selectAllMembersByItemId" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		distinct
+		su.nickname ,su.id,su.username as `name`
+		FROM
+		user_role_item AS uri
+		INNER JOIN sys_user AS su ON su.id = uri.user_id
+		where uri.item_id =
+		#{itemId}
+	</select>
+
+	<select id="selectAllGroupByItemId" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		distinct
+		sg.id,sg.`name`
+		FROM
+		role_group_item AS rgi
+		INNER JOIN sys_group AS sg ON
+		sg.id = rgi.group_id
+		WHERE
+		rgi.item_id =#{itemId}
+	</select>
+	<select id="selectItemByUser" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		distinct
+		si.id,si.`name`,si.iden
+		FROM
+		user_role_item AS uri
+		INNER
+		JOIN
+		sdps_item
+		AS si ON si.id = uri.item_id
+		<where>
+			<if test="roleId != null">
+				and uri.role_id = #{roleId}
+			</if>
+			<if test="userId != null">
+				and uri.user_id = #{userId}
+			</if>
+		</where>
+		UNION ALL
+		SELECT
+		distinct
+		si.id,
+		si.`name`,
+		si.iden
+		FROM
+		role_group_item AS
+		rgi
+		INNER
+		JOIN sdps_item AS si ON si.id = rgi.item_id
+		INNER JOIN
+		user_group AS ug
+		ON ug.group_id = rgi.group_id
+		<where>
+			<if test="roleId != null">
+				and rgi.role_id = #{roleId}
+			</if>
+			<if test="userId != null">
+				and ug.user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	<select id="selectNotExisitMemberByItemId" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		nickname,
+		id,
+		username AS `name`
+		FROM
+		sys_user
+		WHERE
+		id NOT IN (SELECT
+		DISTINCT
+		su.id
+		FROM
+		user_role_item AS uri
+		RIGHT JOIN sys_user AS su ON
+		su.id = uri.user_id
+		WHERE
+		uri.item_id = #{itemId})
+	</select>
+	<select id="selectNotExisitGroupByItemId" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		id,
+		`name`
+		FROM
+		sys_group
+		WHERE
+		id NOT IN (
+		SELECT DISTINCT
+		sg.id
+		FROM
+		role_group_item AS rgi
+		INNER JOIN sys_group AS sg ON sg.id =
+		rgi.group_id
+		WHERE
+		rgi.item_id = #{itemId}
+		)
+	</select>
+	<select id="selectCurrentUserHasItemInfo" resultType="com.seaboxdata.sdps.item.dto.item.ItemDto">
+		SELECT
+		DISTINCT si.id,si.`name`,sr.cluster_id as clusterId
+		FROM
+		user_role_item AS uri
+		INNER JOIN sdps_item AS si ON uri.item_id = si.id
+		INNER JOIN
+		sdps_resources as sr on sr.item_id = si.id
+		<where>
+			<if test="request.enabled != null">
+				AND si.enabled = #{request.enabled}
+			</if>
+			<if test="request.id != null">
+				AND uri.user_id = #{request.id}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SdpsTenantMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsTenant">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="parent_id" jdbcType="BIGINT" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="iden" jdbcType="VARCHAR" property="iden" />
+		<result column="ancestors" jdbcType="VARCHAR" property="ancestors" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="creater_id" jdbcType="BIGINT" property="createrId" />
+		<result column="creater" jdbcType="VARCHAR" property="creater" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+	</resultMap>
+
+	<select id="selectTenants"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.tenant.TenantDto">
+		SELECT
+		st.*,
+		GROUP_CONCAT( DISTINCT utr.user_id ) AS userIds,
+		GROUP_CONCAT( DISTINCT si.id ) AS itemIds,
+		str.ass_cluster_id as
+		assClusterId,
+		str.ass_cluster_name as assClusterName,
+		IFNULL(str.file_num_quota,0) as fileNumQuota,
+		IFNULL(str.max_app_master_ratio,0) as maxAppMasterRatio,
+		IFNULL(str.max_app_num,0) as maxAppNum,
+		IFNULL(str.max_core,0) as
+		maxCore,
+		IFNULL(str.max_memory,0) as maxMemory,
+		IFNULL(str.space_quota,0) as spaceQuota,
+		IFNULL(str.weight,0) as
+		weight,
+		IFNULL( sum( stri.space_quota ), 0 ) AS itemSpaceSum
+		FROM
+		sdps_tenant AS st
+		LEFT JOIN user_role_item AS utr ON st.id =
+		utr.tenant_id
+		LEFT JOIN
+		sdps_item AS si ON si.tenant_id = st.id
+		LEFT JOIN
+		sdps_tenant_resource
+		AS str ON str.tenant_id = st.id
+		LEFT JOIN
+		sdps_tenant_resource AS stri
+		ON stri.item_id = si.id
+		WHERE
+		st.id =
+		#{currTenantId}
+		OR FIND_IN_SET(
+		#{currTenantId},
+		ancestors )
+		GROUP BY
+		st.id
+	</select>
+	<select id="selectHdfsByTenantId"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.tenant.TenantDto">
+		SELECT
+		st.id,
+		st.`NAME`,
+		st.ancestors,
+		st.iden,
+		str.ass_cluster_id,
+		str.ass_cluster_name,
+		IFNULL(str.file_num_quota,0)
+		as fileNumQuota,
+		IFNULL(str.space_quota,0) as spaceQuota,
+		IFNULL( sum(
+		stri.space_quota ), 0 ) AS itemSpaceSum,
+		st.`level`,
+		st.parent_id,
+		str.id as resourceId
+		FROM
+		sdps_tenant AS st
+		LEFT JOIN sdps_item AS si
+		ON
+		si.tenant_id
+		= st.id
+		LEFT
+		JOIN sdps_tenant_resource AS str ON
+		str.tenant_id = st.id
+		LEFT
+		JOIN
+		sdps_tenant_resource AS stri ON
+		stri.item_id = si.id
+		WHERE
+		(
+		st.id
+		=
+		#{tenantId} OR FIND_IN_SET(
+		#{tenantId}, ancestors )
+		)
+		AND
+		st.LEVEL
+		&lt;=
+		#{level}
+		GROUP BY
+		st.id
+	</select>
+	<select id="selectMembersByTenantId" resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT DISTINCT
+		su.id,
+		su.username,
+		su.nickname,
+		su.sex,
+		su.email,
+		GROUP_CONCAT( DISTINCT
+		sr.`name` ) AS userRoles
+		FROM
+		sdps_tenant AS st
+		left JOIN sdps_item AS
+		si ON si.tenant_id = st.id
+		INNER JOIN user_role_item AS utr ON ( st.id
+		= utr.tenant_id OR
+		utr.item_id
+		= si.id )
+		INNER JOIN sys_user AS su ON
+		su.id = utr.user_id
+		INNER JOIN sys_role AS sr ON sr.id = utr.role_id
+		WHERE
+		( st.id =
+		#{tenantId} OR FIND_IN_SET( #{tenantId}, ancestors ) )
+		GROUP BY
+		su.id
+		ORDER BY
+		st.create_time DESC
+	</select>
+
+	<select id="selectItemsByTenantId"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.tenant.TenantDto">
+		SELECT
+		si.id as itemId,
+		si.tenant_id as id,
+		si.`name`,
+		si.iden,
+		str.file_num_quota,
+		str.space_quota,
+		'项目' as type,
+		'HDFS' as
+		resourceType
+		FROM
+		sdps_item si
+		INNER JOIN sdps_tenant_resource AS str ON
+		si.id =
+		str.item_id
+		WHERE
+		si.tenant_id = #{id} order by si.create_time
+	</select>
+
+	<select id="selectYarnByTenantId"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.tenant.TenantDto">
+		(SELECT
+		st.id,
+		st.`name`,
+		st.parent_id,
+		st.iden,
+		str.ass_cluster_id,
+		str.ass_cluster_name,
+		str.max_app_master_ratio,
+		str.max_app_num,
+		str.max_core,
+		str.max_memory,
+		str.weight,
+		str.resource_full_name,
+		str.resource_name,
+		'租户' as type,
+		'YARN' as
+		resourceType,
+		str.id as resourceId
+		FROM
+		sdps_tenant
+		AS st
+		INNER JOIN
+		sdps_tenant_resource AS str
+		ON st.id = str.tenant_id
+		WHERE
+		st.id = #{id}
+		OR st.parent_id = #{id}
+		order by st.create_time
+		desc) UNION ALL(
+		SELECT
+		st.id,
+		si.`name`,
+		st.id as parent_id,
+		si.iden,
+		str.ass_cluster_id,
+		str.ass_cluster_name,
+		str.max_app_master_ratio,
+		str.max_app_num,
+		str.max_core,
+		str.max_memory,
+		str.weight,
+		str.resource_full_name,
+		str.resource_name,
+		'项目' as type,
+		'YARN' as
+		resourceType,
+		str.id as
+		resourceId
+		FROM
+		sdps_tenant AS
+		st
+		INNER JOIN sdps_item AS si
+		ON
+		si.tenant_id = st.id
+		INNER JOIN
+		sdps_tenant_resource AS str ON si.id
+		=
+		str.item_id
+		WHERE
+		st.id = #{id}
+		ORDER BY si.create_time desc
+		)
+	</select>
+
+</mapper>

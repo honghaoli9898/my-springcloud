@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsCoresAndMBInfoMapper">
+    <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.bigdataProxy.bean.SdpsCoresMBInfo">
+        <id column="overview_id" jdbcType="INTEGER" property="resourceId"/>
+        <result column="node_id" javaType="INTEGER" property="nodeId"/>
+        <result column="total_memory" jdbcType="INTEGER" property="totalMemory"/>
+        <result column="used_memory" jdbcType="INTEGER" property="usedMemory"/>
+        <result column="total_cores" jdbcType="INTEGER" property="totalCores"/>
+        <result column="used_cores" jdbcType="INTEGER" property="usedCores"/>
+        <result column="save_time" jdbcType="BIGINT" property="saveTime"/>
+        <result column="cluster_id" jdbcType="INTEGER" property="clusterId"/>
+    </resultMap>
+
+    <!--查询sdps_cores_mb_info的信息-->
+    <select id="listSdpsCoresAndMBInfo" resultType="com.seaboxdata.sdps.bigdataProxy.bean.SdpsCoresMBInfo">
+        select s1.resource_id,s1.node_id,s1.total_memory,s1.used_memory,s1.total_cores,s1.used_cores,s1.save_time,s1.cluster_id
+        from sdps_cores_mb_info s1
+        where s1.cluster_id= #{clusterId}
+          and s1.save_time between #{startTime} and #{endTime}
+        order by save_time desc limit 5
+    </select>
+
+    <select id="getMedianCurrentHour" resultType="DOUBLE">
+        select avg(medianPercent) from (
+            select medianPercent from (
+               select @index:=@index+1 as myindex, ${type} medianPercent
+                from sdps_cores_mb_info, (select @index:=0) AS initvar
+                where cluster_id = #{clusterId} and save_time BETWEEN #{startTime} and #{endTime} and node_id=#{nodeId}
+                order by ${type}
+           ) as t where floor(@index/2+1)=myindex or ceil(@index/2)=myindex
+        ) as x
+    </select>
+
+    <select id="getNodeIdByDuration" resultType="STRING">
+        select distinct node_id from sdps_cores_mb_info where cluster_id = #{clusterId} and save_time BETWEEN #{startTime} and #{endTime}
+    </select>
+
+</mapper>

@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.ribbon.RibbonAutoConfigure,\
+com.seaboxdata.sdps.common.ribbon.FeignAutoConfigure,\
+com.seaboxdata.sdps.common.ribbon.RestTemplateAutoConfigure,\
+com.seaboxdata.sdps.common.ribbon.filter.TenantFilter,\
+com.seaboxdata.sdps.common.ribbon.config.CustomFeignHystrixConcurrencyStrategy

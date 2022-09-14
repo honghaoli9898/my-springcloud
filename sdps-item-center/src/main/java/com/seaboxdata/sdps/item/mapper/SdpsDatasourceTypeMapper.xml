@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsDatasourceTypeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.item.model.SdpsDatasourceType">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="category" jdbcType="VARCHAR" property="category" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="is_valid" jdbcType="BIT" property="isValid" />
+		<result column="is_visible" jdbcType="BIT" property="isVisible" />
+		<collection property="params"
+			resultMap="com.seaboxdata.sdps.item.mapper.SdpsDatasourceParamMapper.BaseResultMap"
+			columnPrefix="param_">
+			<id column="param_id" jdbcType="BIGINT" property="id" />
+			<result column="param_display_name" jdbcType="VARCHAR"
+				property="displayName" />
+			<result column="param_name" jdbcType="VARCHAR" property="name" />
+			<result column="param_desc" jdbcType="VARCHAR" property="desc" />
+			<result column="param_rank" jdbcType="INTEGER" property="rank" />
+			<result column="param_must" jdbcType="BIT" property="must" />
+			<result column="param_field_type" jdbcType="VARCHAR" property="fieldType" />
+		</collection>
+	</resultMap>
+	<select id="selectDataSourceType" resultMap="BaseResultMap">
+		SELECT
+		sdt.id,sdt.`name`,sdt.is_visible,sdp.id as
+		param_id,sdp.field_type as param_field_type,sdp.display_name
+		as param_display_name,sdp.`name` as
+		param_name,sdp.`desc` as
+		param_desc,sdp.rank as param_rank,sdp.type_id
+		as param_type_id,sdp.must as param_must
+		FROM
+		sdps_datasource_param AS sdp
+		INNER JOIN
+		sdps_datasource_type AS sdt ON
+		sdp.type_id = sdt.id
+		<where>
+			<if test="type != null and type != ''">
+				and category = #{type}
+			</if>
+			<if test="isValid != null">
+				and is_valid = #{isValid}
+			</if>
+		</where>
+		ORDER BY sdp.rank
+
+	</select>
+</mapper>

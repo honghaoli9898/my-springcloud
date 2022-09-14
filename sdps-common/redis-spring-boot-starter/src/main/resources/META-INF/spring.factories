@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.redis.RedisAutoConfigure,\
+com.seaboxdata.sdps.common.redis.lock.RedissonDistributedLock,\
+com.seaboxdata.sdps.common.redis.template.RedisRepository

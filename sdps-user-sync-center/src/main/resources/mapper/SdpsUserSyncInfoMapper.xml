@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.usersync.mapper.SdpsUserSyncInfoMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.usersync.model.SdpsUserSyncInfo">
+		<result column="ass_name" jdbcType="VARCHAR" property="assName" />
+		<result column="sync_result" jdbcType="BIT" property="syncResult" />
+		<result column="ass_type" jdbcType="VARCHAR" property="assType" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+		<result column="operator" jdbcType="VARCHAR" property="operator" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.seaboxdata.sdps.usersync.model.SdpsUserSyncInfo">
+		<result column="info" jdbcType="LONGVARCHAR" property="info" />
+	</resultMap>
+</mapper>

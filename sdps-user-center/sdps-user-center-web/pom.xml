@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.seaboxdata.sdps.framework</groupId>
+		<artifactId>sdps-user-center</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>sdps-user-center-web</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>sdps-user-center-app-service</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

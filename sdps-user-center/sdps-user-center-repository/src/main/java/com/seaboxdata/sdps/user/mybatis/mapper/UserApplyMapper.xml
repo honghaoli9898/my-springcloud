@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.UserApplyMapper">
+
+
+    <select id="selectInfoByUser" parameterType="java.lang.String" resultType="com.seaboxdata.sdps.user.mybatis.dto.user.UserApplyDto">
+        select
+            A.id as sqId,
+            A.sq_userid as sqUserId,
+            A.sq_username as sqUserName,
+            A.apply_content as applyContent,
+            A.apply_reason as applyReason,
+            A.apply_time as applyTime,
+            A.apply_num as applyNum,
+            B.id as spId,
+            B.sp_userid as spUserId,
+            B.sp_username as spUserName,
+            B.sp_status as spStatus,
+            B.sp_time as spTime,
+            B.action ,
+            B.sp_reason as spReason
+        from user_apply A
+            left outer join user_approval B on A.id = B.sq_id
+        where A.sq_username = #{userName}
+        order by A.apply_time desc
+    </select>
+
+    <select id="selectInfoByWhere" resultType="com.seaboxdata.sdps.user.mybatis.dto.user.UserApplyDto">
+        select
+            A.id as sqId,
+            A.sq_userid as sqUserId,
+            A.sq_username as sqUserName,
+            A.apply_content as applyContent,
+            A.apply_reason as applyReason,
+            A.apply_time as applyTime,
+            A.apply_num as applyNum,
+            B.id as spId,
+            B.sp_userid as spUserId,
+            B.sp_username as spUserName,
+            B.sp_status as spStatus,
+            B.sp_time as spTime,
+            B.action ,
+            B.sp_reason as spReason
+        from user_apply A
+            left outer join user_approval B on A.id = B.sq_id
+        where A.sq_username = #{userName}
+        <if test="applyContent != null and applyContent != ''">
+            and B.apply_content like '%${applyContent}%'
+        </if>
+        <if test="spStatus != null">
+            and B.sp_status = #{spStatus}
+        </if>
+        order by A.apply_time desc
+    </select>
+
+    <select id="selectInfoPage" resultType="com.seaboxdata.sdps.user.mybatis.dto.user.UserApplyDto">
+        select
+        A.id as sqId,
+        A.sq_userid as sqUserId,
+        A.sq_username as sqUserName,
+        A.apply_content as applyContent,
+        A.apply_reason as applyReason,
+        A.apply_time as applyTime,
+        A.apply_num as applyNum,
+        B.id as spId,
+        B.sp_userid as spUserId,
+        B.sp_username as spUserName,
+        B.sp_status as spStatus,
+        B.sp_time as spTime,
+        B.action ,
+        B.sp_reason as spReason
+        from user_apply A
+        left outer join user_approval B on A.id = B.sq_id
+        where A.sq_username = #{userName}
+        <if test="applyContent != null and applyContent != ''">
+            and B.apply_content like '%${applyContent}%'
+        </if>
+        <if test="spStatus != null">
+            and B.sp_status = #{spStatus}
+        </if>
+        order by A.apply_time desc
+    </select>
+
+
+
+    <update id="updateApplyInfo">
+        update user_apply
+        set
+            apply_reason = #{applyReason},
+            apply_time = #{applyTime},
+            apply_num = apply_num + 1
+        where sq_username = #{userName}
+        and apply_content = #{applyContent}
+    </update>
+
+    <select id="selectInfoByApply" resultType="com.seaboxdata.sdps.user.mybatis.dto.user.UserApplyDto">
+        select
+        A.id as sqId,
+        A.sq_userid as sqUserId,
+        A.sq_username as sqUserName,
+        A.apply_content as applyContent,
+        A.apply_reason as applyReason,
+        A.apply_time as applyTime,
+        A.apply_num as applyNum,
+        B.id as spId,
+        B.sp_userid as spUserId,
+        B.sp_username as spUserName,
+        B.sp_status as spStatus,
+        B.sp_time as spTime,
+        B.action ,
+        B.sp_reason as spReason
+        from user_apply A
+        left outer join user_approval B on A.id = B.sq_id
+        where A.sq_username = #{userName}
+            and A.apply_content = #{applyContent}
+    </select>
+
+</mapper>

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>sdps-framework</artifactId>
+		<groupId>com.seaboxdata.sdps.framework</groupId>
+		<version>1.0.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>sdps-seabox-proxy</artifactId>
+
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<scala.version>2.11.12</scala.version>
+		<scala.compat.version>2.11</scala.compat.version>
+		<hadoop.version>3.1.1</hadoop.version>
+		<spark.version>2.4.4</spark.version>
+		<delta.version>0.5.0</delta.version>
+		<iceberg.version>0.13.1</iceberg.version>
+		<spark.hive.version>2.4.4</spark.hive.version>
+		<hive.version>3.1.0</hive.version>
+		<flink.version>1.13.5</flink.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>ribbon-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>config-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>common-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-extension</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>common-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>log-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>db-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<!--web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-mapreduce-client-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-hdfs</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.leopard</groupId>
+			<artifactId>javahost</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.phoenix</groupId>
+			<artifactId>phoenix-core</artifactId>
+			<version>5.0.0-HBase-2.0</version>
+			<!--<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>-->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-metastore</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ranger</groupId>
+			<artifactId>ranger-plugins-common</artifactId>
+		</dependency>
+		<!--<dependency>
+			　　<groupId>com.google.protobuf</groupId>
+			　　<artifactId>protobuf-java</artifactId>
+			　　<version>2.5.0</version>
+		</dependency>-->
+		<dependency>
+			<groupId>com.seaboxdata.sdps.framework</groupId>
+			<artifactId>sdps-job-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jmimemagic</groupId>
+			<artifactId>jmimemagic</artifactId>
+			<version>0.1.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>xercesImpl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!---->
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-core_2.11</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.delta/delta-core -->
+		<!--<dependency>
+			<groupId>io.delta</groupId>
+			<artifactId>delta-core_2.11</artifactId>
+			<version>${delta.version}</version>
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-sql_2.11</artifactId>
+			<version>${spark.version}</version>
+			<!--<scope>provided</scope>-->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.typesafe/config -->
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+			<version>1.3.3</version>
+		</dependency>
+		<!--<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-cli</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-common</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-metastore</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-jdbc</artifactId>
+			<version>${hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-exec</artifactId>
+			<version>${hive.version}</version>
+		</dependency>-->
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-hive -->
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-hive_2.11</artifactId>
+			<version>${spark.hive.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-clients -->
+		<!--<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-clients_2.11</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.flink/flink-scala &ndash;&gt;
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-scala_2.11</artifactId>
+			<version>${flink.version}</version>
+		</dependency>-->
+
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-streaming-scala -->
+		<!--<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-streaming-scala_2.11</artifactId>
+			<version>${flink.version}</version>
+			<scope>provided</scope>
+		</dependency>-->
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-core -->
+		<!--<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-core</artifactId>
+			<version>1.13.5</version>
+			<scope>provided</scope>
+		</dependency>-->
+
+
+
+
+	</dependencies>
+	<build>
+		<finalName>bigdata-seabox-proxy</finalName>
+		<plugins>
+			<!--打包jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<!--不打包资源文件 -->
+					<excludes>
+						<exclude>**/*.sh</exclude>
+						<exclude>**/*.xsl</exclude>
+						<exclude>*/*.xml</exclude>
+						<exclude>*.**</exclude>
+					</excludes>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<!--MANIFEST.MF 中 Class-Path 加入前缀 -->
+							<classpathPrefix>lib/</classpathPrefix>
+							<!--jar包不包含唯一版本标识 -->
+							<useUniqueVersions>false</useUniqueVersions>
+							<!--指定入口类 -->
+							<mainClass>com.seaboxdata.sdps.seaboxProxy.SdpsSeaboxProxyApplication</mainClass>
+						</manifest>
+						<manifestEntries>
+							<!--MANIFEST.MF 中 Class-Path 加入资源文件目录 -->
+							<Class-Path>./resources/</Class-Path>
+						</manifestEntries>
+					</archive>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+
+				</configuration>
+			</plugin>
+
+			<!--拷贝依赖 copy-dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/lib/
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--拷贝资源文件 copy-resources -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+								</resource>
+							</resources>
+							<!-- <outputDirectory>${project.build.directory}/resources,src/main/java/com/tansun/batch/bus/**/mapper</outputDirectory> -->
+							<outputDirectory>${project.build.directory}/resources</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--spring boot repackage，依赖 maven-jar-plugin 打包的jar包 重新打包成 spring boot 
+				的jar包 -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!--重写包含依赖，包含不存在的依赖，jar里没有pom里的依赖 -->
+					<includes>
+						<include>
+							<groupId>null</groupId>
+							<artifactId>null</artifactId>
+						</include>
+					</includes>
+					<layout>ZIP</layout>
+					<!--使用外部配置文件，jar包里没有资源文件 -->
+					<addResources>true</addResources>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<!--配置jar包特殊标识 配置后，保留原文件，生成新文件 *-run.jar -->
+							<!--配置jar包特殊标识 不配置，原文件命名为 *.jar.original，生成新文件 *.jar -->
+							<!--<classifier>run</classifier> -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--拷贝编译后的jar包及lib,resource到项目部署目录-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>addJarDeployDir</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete dir="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server/lib"/>
+								<delete dir="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server/resources"/>
+								<delete file="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server/${project.build.finalName}.jar"/>
+								<echo message="${project.build.directory}/${project.build.finalName}.jar"/>
+								<copy file="${project.build.directory}/${project.build.finalName}.jar" todir="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server" overwrite="true"/>
+								<copy todir="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server/resources" overwrite="true">
+									<fileset dir="${project.build.directory}/resources"/>
+								</copy>
+								<copy todir="../deploy/部署SDPS服务目录及启动脚本/sdp7/seabox-proxy-server/lib" overwrite="true">
+									<fileset dir="${project.build.directory}/lib"/>
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

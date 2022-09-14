@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.db.config.TenantAutoConfigure,\
+com.seaboxdata.sdps.common.db.config.MybatisPlusAutoConfigure

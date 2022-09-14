@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SysRoleMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.core.model.SysRole">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="type" jdbcType="CHAR" property="type" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="enabled" jdbcType="BIT" property="enabled" />
+		<result column="tenant_id" jdbcType="VARCHAR" property="tenantId" />
+	</resultMap>
+	<select id="findRolesByExample" parameterType="com.seaboxdata.sdps.common.core.model.SysRole"
+		resultType="com.seaboxdata.sdps.common.core.model.SysRole">
+		SELECT
+		*
+		FROM
+		sys_role AS role
+		<where>
+			<if test="role != null">
+				<if test="role.name != null and role.name != ''">
+					and name like '%${role.name}%'
+				</if>
+				<if test="role.type != null and role.type != ''">
+					and type = #{role.type}
+				</if>
+				<if test="role.types != null and role.types.size != 0">
+					and type
+					in
+					<foreach collection="role.types" index="index" item="type" open="("
+						separator="," close=")">
+						#{type}
+					</foreach>
+				</if>
+				<if test="role.enabled != null">
+					and enabled = #{role.enabled}
+				</if>
+				<if test="role.code != null and role.code != ''">
+					and code = #{role.code}
+				</if>
+			</if>
+		</where>
+		order by role.create_time desc
+	</select>
+	<select id="findRoleByUserIds" resultType="com.seaboxdata.sdps.common.core.model.SysRole">
+		SELECT DISTINCT
+		u.*
+		FROM
+		(
+		SELECT
+		role.*,uri.user_id
+		FROM
+		user_role_item
+		AS
+		uri
+		INNER
+		JOIN sys_role AS role ON uri.role_id
+		=
+		role.id
+		WHERE
+		uri.user_id
+		in
+		<foreach collection="userIds" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+		<if test="type != null and type != ''">
+			and role.type =#{type}
+		</if>
+		UNION ALL
+		SELECT
+		role.*,ug.user_id
+		FROM
+		sys_role AS role
+		INNER JOIN
+		role_group_item AS
+		rgi ON rgi.role_id =
+		role.id
+		INNER JOIN
+		user_group AS
+		ug ON
+		ug.group_id =
+		rgi.group_id
+		WHERE
+		ug.user_id in
+		<foreach collection="userIds" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+		<if test="type != null and type != ''">
+			and role.type =#{type}
+		</if>
+		) AS u
+	</select>
+	<select id="findUserByRoleId">
+		SELECT DISTINCT
+		u.*
+		FROM
+		(
+		SELECT DISTINCT
+		ur.*
+		FROM
+		sys_role AS
+		role
+		INNER
+		JOIN
+		user_role_item AS uri ON role.id =
+		uri.role_id
+		INNER
+		JOIN
+		sys_user
+		AS
+		ur ON uri.user_id = ur.id
+		<where>
+			<if test="roleId != null and roleId != ''">
+				and role.id = #{roleId}
+			</if>
+			<if test="username != null and username != ''">
+				and ur.nickname like '%${username}%'
+			</if>
+		</where>
+		UNION ALL
+		SELECT DISTINCT
+		ur.*
+		FROM
+		sys_role AS role
+		INNER JOIN
+		sys_role_group_item AS rgi ON rgi.role_id =
+		role.id
+		INNER JOIN
+		sys_user_group AS ug ON rgi.group_id =
+		ug.group_id
+		INNER JOIN
+		sys_user
+		AS
+		ur ON ur.id = ug.user_id
+		<where>
+			<if test="roleId != null and roleId != ''">
+				and role.id = #{roleId}
+			</if>
+			<if test="username != null and username != ''">
+				and ur.nickname like '%${username}%'
+			</if>
+		</where>
+		) AS u
+	</select>
+
+</mapper>

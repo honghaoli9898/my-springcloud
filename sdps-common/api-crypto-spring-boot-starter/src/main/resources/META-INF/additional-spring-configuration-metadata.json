@@ -1,0 +1,37 @@
+{
+  "properties": [
+    {
+      "name": "api.crypto.symmetric",
+      "type": "java.util.HashMap<java.lang.String,java.lang.String>",
+      "description": "配置对称性密钥."
+    },
+    {
+      "name": "api.crypto.asymmetry",
+      "type": "java.util.HashMap<java.lang.String,cn.hermesdi.crypto.config.ApiCryptoConfig.AsymmetryKey>",
+      "description": "配置非对称性密钥.",
+      "sourceType": "cn.hermesdi.crypto.config.ApiCryptoConfig"
+    },
+    {
+      "name": "api.crypto.signature.timeout",
+      "type": "java.lang.Long",
+      "description": "配置验证签名的超时时间(秒),小于1无效(默认)."
+    },
+    {
+      "name": "api.crypto.signature.secret-key",
+      "type": "java.lang.String",
+      "description": "配置签名的密钥."
+    },
+    {
+      "name": "api.crypto.encoding-type",
+      "type": "cn.hermesdi.crypto.constants.EncodingType",
+      "description": "配置全局加密解密编码类型.",
+      "sourceType": "cn.hermesdi.crypto.constants.EncodingType"
+    },
+    {
+      "name": "api.crypto.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "配置全局加密解密处理字符集."
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsYarnInfoMapper">
+    <resultMap id="BaseResultMap" type="com.seaboxdata.sdps.common.framework.bean.yarn.SdpsYarnInfo">
+        <id column="yarn_id" jdbcType="INTEGER" property="yarnId"/>
+        <result column="yarn_host" jdbcType="VARCHAR" property="yarnHost"/>
+        <result column="yarn_port" jdbcType="VARCHAR" property="yarnPort"/>
+        <result column="yarn_admin_user" jdbcType="VARCHAR" property="yarnAdminUser"/>
+        <result column="cluster_id" jdbcType="INTEGER" property="clusterId"/>
+    </resultMap>
+
+    <!--查询集群yarn信息-->
+
+    <!--<select id="selectYarnInfoById" resultType="com.seaboxdata.sdps.common.framework.bean.yarn.SdpsYarnInfo">
+        select s1.yarn_id,s1.yarn_host,s1.yarn_port,s1.cluster_id
+        from sdps_yarn_info s1
+        where s1.cluster_id= #{clusterId}
+    </select>-->
+
+    <!--根据yarn集群查询clusterId-->
+    <!--<select id="selectClusterId" resultType="com.seaboxdata.sdps.common.framework.bean.yarn.SdpsYarnInfo">
+        select s1.yarn_id,s1.yarn_host,s1.yarn_port,s1.cluster_id
+        from sdps_yarn_info s1
+    </select>-->
+
+
+</mapper>

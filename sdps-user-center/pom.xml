@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>com.seaboxdata.sdps.framework</groupId>
+        <artifactId>sdps-framework</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.seaboxdata.sdps.framework</groupId>
+    <artifactId>sdps-user-center</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+
+    <properties>
+        <user.version>1.0.0</user.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.seaboxdata.sdps.framework</groupId>
+                <artifactId>sdps-user-center-app-api</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.seaboxdata.sdps.framework</groupId>
+                <artifactId>sdps-user-center-repository</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.seaboxdata.sdps.framework</groupId>
+                <artifactId>sdps-user-center-app-service</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.seaboxdata.sdps.framework</groupId>
+                <artifactId>sdps-user-center-web</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <modules>
+        <module>sdps-user-center-web</module>
+        <module>sdps-user-center-app</module>
+        <module>sdps-user-center-repository</module>
+        <module>sdps-user-center-start</module>
+    </modules>
+</project>

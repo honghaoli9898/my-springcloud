@@ -1,0 +1,254 @@
+spring:
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+#      - org.redisson.spring.starter.RedissonAutoConfiguration
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: false # 是否开启Spring Cloud的重试功能
+    gateway:
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
+          #trustedX509Certificates:
+          #- cacerts.pem          
+          handshake-timeout-millis: 10000
+          close-notify-flush-timeout-millis: 3000
+          close-notify-read-timeout-millis: 0
+      default-filters:
+      - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Vary, RETAIN_FIRST
+      - name: RequestRateLimiter
+        args:
+          redis-rate-limiter.replenishRate: 30
+          redis-rate-limiter.burstCapacity: 60
+          redis-rate-limiter.requestedTokens: 1
+          key-resolver: "#{@ipKeyResolver}"
+      routes:
+        - id: oauth-login
+          uri: lb://uaa-server
+          predicates:
+            - Path=/api-uaa/oauth/token
+          filters:
+            - name: PasswordDecoder
+            - PreserveHostHeader
+            - StripPrefix=1
+        - id: auth
+          uri: lb://uaa-server
+          predicates:
+            - Path=/api-uaa/**
+          filters:
+            - StripPrefix=1
+            - PreserveHostHeader
+        - id: auth-login-page
+          uri: lb://uaa-server
+          predicates:
+            - Path=/login.html
+          filters:
+            - PreserveHostHeader
+        - id: auth-login-process
+          uri: lb://uaa-server
+          predicates:
+            - Path=/user/login
+          filters:
+            - PreserveHostHeader
+        - id: auth-login-token
+          uri: lb://uaa-server
+          predicates:
+            - Path=/oauth/token
+          filters:
+            - PreserveHostHeader
+        - id: auth-login-authorize
+          uri: lb://uaa-server
+          predicates:
+            - Path=/oauth/authorize
+          filters:
+            - PreserveHostHeader
+        - id: auth-check-process
+          uri: lb://uaa-server
+          predicates:
+            - Path=/oauth/check_token
+          filters:
+            - PreserveHostHeader
+        - id: user
+          uri: lb://${sdps.user.center.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/api-user/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: item
+          uri: lb://${sdps.item.center.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/api-item/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: bigdata-common-proxy
+          uri: lb://${sdps.bigdataCommonProxy.center.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/api-proxy/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: bigdata-seabox-proxy
+          uri: lb://${sdps.seaboxProxy.center.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/api-seabox/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: sdo
+          uri: http://10.1.3.24:6080
+          predicates:
+            # 转发该路径
+            - Path=/sdo/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: xxl-job-admin
+          uri: lb://${sdps.job.admin.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/xxl-job-admin/**
+        - id: xxl-job-executor
+          uri: lb://${sdps.job.executor.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/api-executor/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: ssh-web
+          uri: lb:ws://${sdps.ssh.web.serviceId}
+          predicates:
+            # 转发该路径
+            - Path=/ssh-web/**
+          filters:
+            # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: license-client
+          uri: lb://${sdps.license.client.serviceId}
+          predicates:
+              # 转发该路径
+            - Path=/license-client/**
+          filters:
+              # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+        - id: user-sync-center
+          uri: lb://${sdps.usersync.center.serviceId}
+          predicates:
+              # 转发该路径
+            - Path=/api-user-sync/**
+          filters:
+              # 为了适配前端,将路径切掉一级
+            - StripPrefix=1
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+
+#hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 30000
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000
+      maxQueueSize: 1000   #默认值为 -1，此时Hystrix 不会向队列内存放作业。即默认hystrix是不会使用队列的
+      maximumSize: 1000    #最大线程池大小
+      allowMaximumSizeToDivergeFromCoreSize: true   #是否允许队列满之后新建线程到达到最大线程数。默认值为false，当队列满后就执行降级方法
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  security:
+    enabled: false
+sdps:
+  oauth2:
+    token:
+      store:
+        type: redis
+  security:
+    ignore:
+      # 忽略认证的地址
+      httpUrls: >
+        /api-uaa/oauth/**,
+        /api-uaa/captcha/**,
+        /api-uaa/validata/**,
+        /api-uaa/css/**,
+        /api-uaa/images/**,
+        /api-uaa/js/**,
+        /login.html,
+        /user/login,
+        /api-uaa/tokens/key,
+        /api-uaa/tokens/getUserInfoByToken,
+        /api-user/forgetPwSetOrRegister/*,
+        /api-seabox/seabox/ranger/login,
+        /sdo/**,
+        /actuator/**,
+        /api-route/**,
+        /api-user/sendValidationEmail,
+        /api-user/resetPassword,
+        /xxl-job-admin/index,
+        /xxl-job-admin/static/**,
+        /xxl-job-admin/jobinfo,
+        /xxl-job-admin/joblog,
+        /xxl-job-admin/jobgroup,
+        /xxl-job-admin/joblog/logDetailPage,
+        /favicon.ico,
+        /ssh-web/webssh
+
+        
+        
+    auth:
+      encodeKey: sdps842651379000
+      licenseUrls: >
+        /license-client/client/**,
+        /api-user/users/current,
+        /api-uaa/oauth/token,
+        /api-uaa/captcha/**,
+        /api-uaa/validata/**,
+        /api-uaa/css/**,
+        /api-uaa/images/**,
+        /api-uaa/js/**,
+        /login.html,
+        /user/login,
+        /actuator/**,
+        /api-proxy/devops/warning/count,
+        /api-user/UC30/UC3018,
+        /api-user/menus/findAlls,
+        /api-usermenus/menus/saveOrUpdate,
+        /api-uaa/oauth/remove/token,
+        /api-user/menus/current
+      urlPermission:
+        #是否开启url级别权限
+        enable: false
+        #配置只进行登录认证，不进行url权限认证的api
+        ignoreUrls: >
+          /api-user/menus/current,
+          /api-user/users/current,
+          /api-log/requestStat
+        #白名单
+        includeClientIds:
+          - webApp
+      renew:
+        #是否开启token自动续签（目前只有redis实现）
+        enable: true
+        #白名单
+        includeClientIds:
+          - webApp
+    cores:
+      allows:
+        - http://127.0.0.1:7003

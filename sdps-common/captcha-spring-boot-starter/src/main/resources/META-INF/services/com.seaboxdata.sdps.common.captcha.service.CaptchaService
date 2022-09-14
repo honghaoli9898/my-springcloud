@@ -1,0 +1,3 @@
+com.seaboxdata.sdps.common.captcha.service.impl.BlockPuzzleCaptchaServiceImpl
+com.seaboxdata.sdps.common.captcha.service.impl.ClickWordCaptchaServiceImpl
+com.seaboxdata.sdps.common.captcha.service.impl.DefaultCaptchaServiceImpl

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.seaboxProxy.mapper.SysGlobalArgsMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SysGlobalArgs">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="arg_type" jdbcType="VARCHAR" property="argType" />
+		<result column="arg_key" jdbcType="VARCHAR" property="argKey" />
+		<result column="arg_key_desc" jdbcType="VARCHAR" property="argKeyDesc" />
+		<result column="arg_value" jdbcType="VARCHAR" property="argValue" />
+		<result column="arg_value_desc" jdbcType="VARCHAR" property="argValueDesc" />
+	</resultMap>
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.HiveDataBaseOperatorMapper">
+	<update id="createDataBase" parameterType="java.lang.String">
+		CREATE DATABASE
+		`${name}`
+		<if test="comment != null">
+			comment #{comment}
+		</if>
+	</update>
+</mapper>

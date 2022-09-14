@@ -1,0 +1,199 @@
+server:
+  max-http-header-size: 4048576
+  tomcat:
+    max-http-post-size: 20MB
+management:
+  endpoint:
+    health:
+      show-details: always
+    shutdown:
+      enabled: true
+    env:
+      enabled: false
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: "*"
+        exclude: env
+
+spring:
+  security:
+    basic:
+      path: /actuator
+  datasource:
+    druid:
+      initialSize: 2
+      minIdle: 1
+      maxActive: 5
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      use-global-data-source-stat: true
+      connect-properties:
+        druid.stat.mergeSql: true
+        druid.stat.slowSqlMillis: 5000
+       # config.decrypt: true
+       # config.decrypt.key: ${secret.public.key}
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        session-stat-max-count: 1000
+        profile-enabled: true
+        session-stat-enabled: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: "/druid/*"
+        reset-enable: false
+        login-username: admin
+        login-password: admin
+        allow: 
+    dynamic:
+      druid:
+        initial-size: 2
+        max-active: 5
+        min-idle: 1
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        validation-query: select 1
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+       # pool-prepared-statements: true
+        filters: stat,slf4j
+       # max-pool-prepared-statement-per-connection-size: 20
+        use-global-data-source-stat: true
+        connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+        web-stat-filter:
+          enabled: true
+          url-pattern: /*
+          exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico, /druid/*"
+          session-stat-enable: true
+          session-stat-max-count: 1000
+        stat-view-servlet:
+          enabled: true
+          url-pattern: /druid/*
+          reset-enable: false
+          login-username: admin
+          login-password: admin
+          allow: 
+
+  #redis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: haojiayou@
+#    host: 10.1.1.122
+#    port: 6379
+#    password: 123456
+    timeout: 10000ms
+    database: 0
+#  sentinel:
+#    master: collmaster
+#    nodes: 192.168.43.17:9005
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+#    jedis:
+#      pool:
+#        max-active: 8
+#        max-wait: -1ms
+#        max-idle: 8
+#        min-idle: 0
+#        timeout: 10000
+#        store-type: redis
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+      file-size-threshold: 1MB
+  messages:
+    basename: i18n/messages
+    cache-duration: 3600s
+    encoding: UTF-8
+
+
+ribbon:
+  ServerListRefreshInterval: 15000
+  ConnectTimeout: 30000
+  ReadTimeout: 30000
+  OkToRetryOnAllOperations: true
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 0
+mybatis-plus:
+  global-config:
+    db-config:
+      field-strategy: NOT_NULL
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  cache-enabled: false
+  mapper-locations: classpath:/mapper/*Mapper.xml,classpath:/mappers/*Mapper.xml
+feign:
+  sentinel:
+    enabled: true
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: true
+    max-connections: 1000
+    max-connections-per-route: 100
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 60000
+        loggerLevel: basic
+      feignName:
+        connectTimeout: 30000
+        readTimeout: 30000
+#  compression:
+#    request:
+#      enabled: true
+#      mime-types: text/xml,application/xml,application/json
+#      min-request-size: 2048
+#    response:
+#      enabled: true
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 30000
+api:
+  crypto:
+    charset: utf-8
+    encoding-type: base64
+    symmetric:
+      AES: 1324567899999999
+      DESede: 1324567899999999
+      DES: 13245678
+sdps:
+  file:
+    crypto:
+      type: DES
+      secretKey: 123456781234567812345678
+security:
+  kerberos:
+    login:
+      enable: true
+      userSuffix: "@HADOOP.COM"
+      krb5: /etc/krb5.conf
+      keytabPath: /data/SDP7.1/sdps/sdp7.1/keytab
+      userSyncKeytabPath: /data/SDP7.1/sdps/sdp7.1/keytab/userSync
+      kdcKeytabPath: /data/SDP7.1/sdps/sdp7.1/keytab/kdc
+      seaboxKeytabPath: /data/SDP7.1/sdps/sdp7.1/keytab/seabox
+      itemKeytabPath: /data/SDP7.1/sdps/sdp7.1/keytab/item
+      adminPrincipal: admin/admin
+      adminKeytab: /etc/security/keytabs/admin.keytab
+      getKeytabUrl: http://user-sync-center/usersync/getKeytab?
+      getKrb5Url: http://user-sync-center/usersync/getKrb5?
+      getClusterUrl: http://bigdataCommon-proxy-server/clusterCommon/getEnableKerberosClusters

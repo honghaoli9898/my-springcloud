@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.bigdataProxy.mapper.SdpsServerInfoMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="server_id" jdbcType="INTEGER" property="serverId" />
+		<result column="host" jdbcType="VARCHAR" property="host" />
+		<result column="port" jdbcType="VARCHAR" property="port" />
+		<result column="user" jdbcType="VARCHAR" property="user" />
+		<result column="passwd" jdbcType="VARCHAR" property="passwd" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="domain" jdbcType="VARCHAR" property="domain" />
+	</resultMap>
+
+	<select id="selectServerInfoPage"
+		resultType="com.seaboxdata.sdps.bigdataProxy.bean.SdpsServerInfoDto">
+		SELECT
+		ssi.*,sc.cluster_id as clusterId,sc.cluster_name as
+		clusterName,sga.arg_key_desc as typeName
+		FROM
+		sdps_server_info AS ssi
+		INNER JOIN sdps_cluster AS sc ON sc.server_id =
+		ssi.server_id
+		INNER JOIN
+		sys_global_args as sga on
+		sga.arg_type='subassembly' and sga.arg_key =
+		ssi.type
+		<where>
+			<if test="request != null">
+				<if test="request.clusterId != null">
+					and sc.cluster_id = #{request.clusterId}
+				</if>
+				<if test="request.type != null and request.type != ''">
+					and ssi.type = #{request.type}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectYarnInfoById" resultType="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		select s1.server_id,s1.host,s1.port
+		from sdps_server_info s1
+		where s1.server_id= #{serverId} and s1.port = #{port}
+	</select>
+
+
+	<!--根据yarn集群查询clusterId-->
+	<select id="selectClusterId" resultType="com.seaboxdata.sdps.common.core.model.SdpsServerInfo">
+		SELECT s1.server_id,s1.host,s1.port,s1.type
+		FROM sdps_server_info s1
+	</select>
+</mapper>

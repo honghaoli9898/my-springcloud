@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://10.1.3.24:3306/sdps?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+mybatis-plus:
+  type-aliases-package: com.seaboxdata.sdps.bigdataProxy.bean,com.seaboxdata.sdps.common.framework.bean
+  mapper-locations:
+    - classpath*:mapper/*.xml

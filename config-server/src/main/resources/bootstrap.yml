@@ -1,0 +1,35 @@
+server:
+  port: ${config.instance.port}
+spring:
+  application:
+    name: ${spring.cloud.config.serviceId}
+  profiles:
+    active:
+      - native
+  security:
+    basic:
+      enabled: false
+  cloud:
+#    inetutils:
+#      preferred-networks: ${ip-prefix:[0-9]*.[0-9]*.[0-9]*.[0-9]*}
+    config:
+      server:
+        native:
+          add-label-locations: false
+          search-locations: ${config.search.locations}
+eureka:
+  instance:
+    hostname: ${eureka.instance.hostname}
+    port: ${eureka.instance.port}
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${security.user.name}:${security.user.password}@${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+    registry-fetch-interval-seconds: 5
+logging:
+  level:
+    org: info
+    com: info

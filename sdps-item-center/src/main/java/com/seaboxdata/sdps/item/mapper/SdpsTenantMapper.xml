@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.SdpsTenantMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SdpsTenant">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="parent_id" jdbcType="BIGINT" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="iden" jdbcType="VARCHAR" property="iden" />
+		<result column="ancestors" jdbcType="VARCHAR" property="ancestors" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+		<result column="creater_id" jdbcType="BIGINT" property="createrId" />
+		<result column="creater" jdbcType="VARCHAR" property="creater" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+	</resultMap>
+
+</mapper>

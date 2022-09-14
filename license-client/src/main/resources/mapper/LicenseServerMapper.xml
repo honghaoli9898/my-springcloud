@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seaboxdata.sdps.licenseclient.dao.LicenseServerMapper">
+
+    <insert id="insert"
+            parameterType="com.seaboxdata.sdps.licenseclient.bean.license.LicenseServerDTO"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO t_license_client_server(cpu_serial,
+        main_board_serial,
+        mac_address,
+        ip_address)
+        VALUES(#{cpuSerial},
+        #{mainBoardSerial},
+        #{macAddress},
+        #{ipAddress})
+    </insert>
+
+    <!--    根据CPU序列号和主板序列号查询指定记录-->
+    <select id="getServerInfoByCpuAndMainBoard"
+            parameterType="com.seaboxdata.sdps.licenseclient.bean.license.LicenseServerDTO"
+            resultType="com.seaboxdata.sdps.licenseclient.bean.license.LicenseServerVO">
+        SELECT cpu_serial AS cpuSerial,
+        main_board_serial AS mainBoardSerial,
+        mac_address AS macAddress,
+        ip_address AS ipAddress
+        FROM t_license_client_server
+        WHERE cpu_serial = #{cpuSerial} AND main_board_serial = #{mainBoardSerial}
+    </select>
+
+    <!--查询全部记录-->
+    <select id="getServerInfos"
+            resultType="com.seaboxdata.sdps.licenseclient.bean.license.LicenseServerVO">
+        SELECT cpu_serial AS cpuSerial,
+        main_board_serial AS mainBoardSerial,
+        mac_address AS macAddress,
+        ip_address AS ipAddress
+        FROM t_license_client_server
+    </select>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SecrecyKeyMapper">
+
+    <resultMap type="com.seaboxdata.sdps.user.mybatis.model.SecrecyKey" id="SecrecyKeyResult">
+        <id     property="id"       column="id"      />
+        <result property="userId"       column="user_id"      />
+        <result property="name"       column="name"      />
+        <result property="secrecyKey"       column="secrecy_key"      />
+        <result property="description"       column="description"      />
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+        <result property="remark"       column="remark"       />
+    </resultMap>
+
+    <sql id="allColumns">id,user_id,name,secrecy_key,description,create_time,create_by,update_time,update_by</sql>
+
+    <select id="selectList" resultMap="SecrecyKeyResult" parameterType="SecrecyKey">
+        SELECT
+        <include refid="allColumns"/>
+        FROM sdps_secrecy_key
+        WHERE 1=1
+        <if test="createBy != '' and createBy != null">
+            AND create_by = #{createBy}
+        </if>
+        <if test="name != '' and name != null">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test=" id != '' and id != null ">
+            AND id = #{id}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="selectListByName" resultMap="SecrecyKeyResult" parameterType="secrecyKey">
+        SELECT
+        <include refid="allColumns"/>
+        FROM sdps_secrecy_key
+        WHERE 1=1
+        <if test="name != '' and name != null">
+            AND name = #{name}
+        </if>
+        <if test=" id != '' and id != null ">
+            AND id != #{id}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="secrecyKey">
+        INSERT INTO sdps_secrecy_key
+        (
+            user_id,
+            name,
+            secrecy_key,
+            description,
+            create_time,
+            create_by,
+            remark
+        )
+        VALUES
+        (
+            #{userId},
+            #{name},
+            #{secrecyKey},
+            #{description},
+            now(),
+            #{createBy},
+            #{remark}
+        )
+    </insert>
+
+    <update id="update" parameterType="secrecyKey">
+        UPDATE sdps_secrecy_key SET
+                                    user_id = #{userId},name = #{name},secrecy_key=#{secrecyKey},description=#{description},update_time = sysdate(),update_by=#{updateBy},remark=#{remark}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="secrecyKey">
+        DELETE FROM sdps_secrecy_key WHERE id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

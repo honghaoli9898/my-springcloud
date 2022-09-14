@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.UserApprovalMapper">
+
+    <update id="updateApprovalInfo">
+        update user_approval
+        set
+            apply_reason = #{applyReason},
+            apply_time = #{applyTime},
+            sp_status = 0,
+            sp_time = null,
+            action = 0,
+            sp_reason = null
+        where sq_username = #{userName}
+        and apply_content = #{applyContent}
+    </update>
+
+
+    <select id="selectInfoByUser" parameterType="java.lang.String" resultType="com.seaboxdata.sdps.user.mybatis.model.UserApproval">
+        select
+            A.id as spId,
+            A.sq_id as sqId,
+            A.sp_userid as spUserId,
+            A.sp_username as spUserName,
+            A.sq_userid as sqUserId,
+            A.sq_username as sqUserName,
+            A.apply_content as applyContent,
+            A.apply_reason as applyReason,
+            A.apply_time as applyTime,
+            A.sp_status as spStatus,
+            A.sp_time as spTime,
+            A.action ,
+            A.sp_reason as spReason
+        from user_approval A
+        where A.sp_username = #{userName}
+        order by A.sp_status asc, A.apply_time desc
+    </select>
+
+
+    <select id="selectInfoByWhere" resultType="com.seaboxdata.sdps.user.mybatis.model.UserApproval">
+        select
+            A.id,
+            A.sq_id as sqId,
+            A.sp_userid as spUserId,
+            A.sp_username as spUserName,
+            A.sq_userid as sqUserId,
+            A.sq_username as sqUserName,
+            A.apply_content as applyContent,
+            A.apply_reason as applyReason,
+            A.apply_time as applyTime,
+            A.sp_status as spStatus,
+            A.sp_time as spTime,
+            A.action ,
+            A.sp_reason as spReason
+        from user_approval A
+        where A.sp_username = #{userName}
+        <if test="status != null ">
+            and A.sp_status in
+            <foreach collection="status" index="index" item="item" open="("
+                     separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="applyContent != null and applyContent != ''">
+            and A.apply_content like '%${applyContent}%'
+        </if>
+        <if test="spStatus != null">
+            and A.sp_status = #{spStatus}
+        </if>
+        order by A.sp_status asc, A.apply_time desc
+    </select>
+
+    <select id="selectInfoPage" resultType="com.seaboxdata.sdps.user.mybatis.model.UserApproval">
+        select
+        A.id,
+        A.sq_id as sqId,
+        A.sp_userid as spUserId,
+        A.sp_username as spUserName,
+        A.sq_userid as sqUserId,
+        A.sq_username as sqUserName,
+        A.apply_content as applyContent,
+        A.apply_reason as applyReason,
+        A.apply_time as applyTime,
+        A.sp_status as spStatus,
+        A.sp_time as spTime,
+        A.action ,
+        A.sp_reason as spReason
+        from user_approval A
+        where A.sp_username = #{userName}
+        <if test="status != null ">
+            and A.sp_status in
+            <foreach collection="status" index="index" item="item" open="("
+                     separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="applyContent != null and applyContent != ''">
+            and A.apply_content like '%${applyContent}%'
+        </if>
+        <if test="spStatus != null">
+            and A.sp_status = #{spStatus}
+        </if>
+        order by A.sp_status asc, A.apply_time desc
+    </select>
+
+
+
+</mapper>

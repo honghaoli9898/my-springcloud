@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.seaboxdata.sdps.job.executor.mybatis.mapper.SdpsTaskInfoMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.framework.bean.task.SdpsTaskInfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="cluster_id" jdbcType="INTEGER" property="clusterId" />
+		<result column="submit_id" jdbcType="BIGINT" property="submitId" />
+		<result column="cluster_name" jdbcType="VARCHAR" property="clusterName" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="yarn_app_id" jdbcType="VARCHAR" property="yarnAppId" />
+		<result column="yarn_app_name" jdbcType="VARCHAR" property="yarnAppName" />
+		<result column="yarn_queue" jdbcType="VARCHAR" property="yarnQueue" />
+		<result column="yarn_tracking_url" jdbcType="VARCHAR" property="yarnTrackingUrl" />
+		<result column="application_type" jdbcType="VARCHAR" property="applicationType" />
+		<result column="xxl_log_id" jdbcType="BIGINT" property="xxlLogId" />
+		<result column="xxl_job_id" jdbcType="BIGINT" property="xxlJobId" />
+		<result column="shell_path" jdbcType="VARCHAR" property="shellPath" />
+		<result column="shell_context" jdbcType="LONGVARCHAR" property="shellContext" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="ext_0" jdbcType="VARCHAR" property="ext0" />
+		<result column="ext_1" jdbcType="VARCHAR" property="ext1" />
+		<result column="ext_2" jdbcType="VARCHAR" property="ext2" />
+		<result column="ext_3" jdbcType="VARCHAR" property="ext3" />
+		<result column="ext_4" jdbcType="VARCHAR" property="ext4" />
+	</resultMap>
+	<resultMap id="TaskInfoResultMap"
+		type="com.seaboxdata.sdps.job.executor.mybatis.dto.TaskInfoDto"
+		extends="BaseResultMap">
+		<result column="trigger_time" jdbcType="TIMESTAMP" property="triggerTime" />
+		<result column="handle_time" jdbcType="TIMESTAMP" property="handleTime" />
+		<result column="trigger_code" jdbcType="INTEGER" property="triggerCode" />
+		<result column="handle_code" jdbcType="INTEGER" property="handleCode" />
+		<result column="trigger_msg" jdbcType="VARCHAR" property="triggerMsg" />
+		<result column="handle_msg" jdbcType="VARCHAR" property="handleMsg" />
+		<result column="executor_address" jdbcType="VARCHAR" property="executorAddress" />
+		<result column="merge_before_total_file_num" jdbcType="BIGINT"
+			property="mergeBeforeTotalFileNum" />
+		<result column="merge_before_total_file_block_size" jdbcType="BIGINT"
+			property="mergeBeforeTotalFileBlockSize" />
+		<result column="avg_merge_before_total_file_block_size"
+			jdbcType="NUMERIC" property="avgMergeBeforeTotalFileBlockSize" />
+		<result column="merge_after_total_file_num" jdbcType="BIGINT"
+			property="mergeAfterTotalFileNum" />
+		<result column="merge_after_total_file_block_size" jdbcType="BIGINT"
+			property="mergeAfterTotalFileBlockSize" />
+		<result column="avg_merge_after_total_file_block_size"
+			jdbcType="NUMERIC" property="avgMergeAfterTotalFileBlockSize" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="format_type" jdbcType="VARCHAR" property="formatType" />
+		<result column="codec_type" jdbcType="VARCHAR" property="codecType" />
+		<result column="db_name" jdbcType="VARCHAR" property="dbName" />
+		<result column="table_name" jdbcType="VARCHAR" property="tableName" />
+	</resultMap>
+	<select id="pageList" resultMap="TaskInfoResultMap">
+		SELECT
+		sti.id,
+		sti.cluster_name,
+		sti.cluster_id,
+		sti.ext_0,
+		sti.ext_1,
+		sti.ext_2,
+		sti.ext_3,
+		sti.ext_4,
+		sti.xxl_log_id,
+		sti.submit_id,
+		sti.yarn_app_id,
+		sti.create_time,
+		xjl.handle_code,
+		xjl.trigger_msg,
+		xjl.trigger_time,
+		xjl.handle_time,
+		xjl.trigger_code,
+		xjl.handle_msg,
+		xjl.executor_address,
+		smdi.merge_before_total_file_num,
+		smdi.merge_before_total_file_block_size,
+		ROUND(smdi.merge_before_total_file_block_size / smdi.merge_before_total_file_num ,2)AS
+		avg_merge_before_total_file_block_size,
+		smdi.merge_after_total_file_num,
+		smdi.merge_after_total_file_block_size,
+		ROUND(smdi.merge_after_total_file_block_size /
+		smdi.merge_after_total_file_num,2) AS
+		avg_merge_after_total_file_block_size,
+		smsi.type,
+		smsi.format_type,
+		smsi.codec_type,
+		smsi.db_name,
+		smsi.table_name
+		FROM
+		sdps_task_info AS sti
+		LEFT JOIN xxl_job_log AS xjl ON sti.xxl_log_id = xjl.id
+		LEFT JOIN sdps_merge_data_info AS smdi ON smdi.task_id = sti.id
+		LEFT JOIN sdps_merge_submit_info AS smsi ON smsi.task_id = sti.id
+		<where>
+			<if test="request.clusterId != null">
+				and sti.cluster_id = #{request.clusterId}
+			</if>
+			<if test="request.xxlJobIds != null and request.xxlJobIds.size() > 0">
+				and xjl.job_id in
+				<foreach collection="request.xxlJobIds" index="index" item="id"
+					open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="request.path != null and request.path != ''">
+				and sti.ext_0 like '%${request.path}%'
+			</if>
+			<if test="request.jobId != null">
+				and sti.xxl_job_id = #{request.jobId}
+			</if>
+			<if test="request.fileType != null and request.fileType != ''">
+				and smsi.type = #{request.fileType}
+			</if>
+			<if test="request.status != null and request.status != ''">
+				<choose>
+					<when test="request.status == 9">
+						and xjl.handle_code = '200'
+					</when>
+					<when test="request.status == 1">
+						and (xjl.handle_code = '500'
+						and xjl.handle_msg not like
+						'人为操作，主动终止:%' or
+						xjl.trigger_code = '500')
+					</when>
+					<when test="request.status == 2">
+						and xjl.handle_code = '500'
+						and xjl.handle_msg like
+						'人为操作，主动终止:%'
+					</when>
+					<when test="request.status == 3">
+						and (xjl.trigger_code = '200'
+						and xjl.handle_code is
+						null or (xjl.handle_code = '0'))
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+		order by sti.update_time DESC
+	</select>
+</mapper>

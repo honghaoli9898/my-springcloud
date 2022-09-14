@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SysOrganizationMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.user.mybatis.model.SysOrganization">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="create_user" jdbcType="TIMESTAMP" property="createUser" />
+		<result column="update_user" jdbcType="TIMESTAMP" property="updateUser" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="parent_id" jdbcType="BIGINT" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+	</resultMap>
+
+	<select id="findOrganizationsByExample"
+		parameterType="com.seaboxdata.sdps.user.mybatis.model.SysOrganization"
+		resultType="com.seaboxdata.sdps.user.mybatis.model.SysOrganization">
+		select * from sys_organization
+		<where>
+			<if test="organization.name != null and organization.name != ''">
+				and name like '%${organization.name}%'
+			</if>
+			<if test="organization.code != null and organization.code != ''">
+				and code = #{code}
+			</if>
+			<if test="organization.parentId != null and organization.parentId != ''">
+				and parent_id = #{organization.parentId}
+			</if>
+		</where>
+	</select>
+</mapper>

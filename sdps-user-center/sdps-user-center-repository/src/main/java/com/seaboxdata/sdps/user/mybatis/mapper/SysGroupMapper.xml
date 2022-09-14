@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.user.mybatis.mapper.SysGroupMapper">
+	<resultMap id="BaseResultMap"
+		type="com.seaboxdata.sdps.common.core.model.SysGroup">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="desc" jdbcType="VARCHAR" property="desc" />
+	</resultMap>
+	<select id="selectGroupByExample" resultType="com.seaboxdata.sdps.common.core.model.SysGroup">
+		SELECT
+		*
+		FROM
+		sys_group
+		<where>
+			<if test="group.name != null and group.name != ''">
+				and name like '%${group.name}%'
+			</if>
+			<if test="group.code != null and group.code != ''">
+				and code = #{group.code}
+			</if>
+			<if test="group.ids != null and group.ids.size &gt;0">
+				and id in
+				<foreach collection="id" index="index" item="group.ids"
+					open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		order by create_time desc
+	</select>
+	<update id="updateGroupByExample" parameterType="com.seaboxdata.sdps.common.core.model.SysGroup">
+		update sys_group
+		<set>
+			<if test="group.id != null">
+				id = #{group.id,jdbcType=BIGINT},
+			</if>
+			<if test="group.createTime != null">
+				create_time = #{group.createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="group.updateTime != null">
+				update_time = #{group.updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="group.createUser != null">
+				create_user = #{group.createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="group.updateUser != null">
+				update_user = #{group.updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="group.code != null">
+				code = #{group.code,jdbcType=VARCHAR},
+			</if>
+			<if test="group.name != null">
+				name = #{group.name,jdbcType=VARCHAR},
+			</if>
+			<if test="group.type != null">
+				type = #{group.type,jdbcType=CHAR},
+			</if>
+			<if test="group.desc != null">
+				desc = #{group.desc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			<if test="group.id != null">
+				id = #{group.id,jdbcType=BIGINT},
+			</if>
+			<if test="group.code != null">
+				code = #{group.code,jdbcType=VARCHAR},
+			</if>
+			<if test="group.name != null">
+				name = #{group.name,jdbcType=VARCHAR},
+			</if>
+			<if test="group.type != null">
+				type = #{group.type,jdbcType=CHAR},
+			</if>
+		</where>
+	</update>
+
+	<select id="findGroupByUserId"
+		resultType="com.seaboxdata.sdps.user.mybatis.vo.group.GroupRequest">
+		SELECT distinct
+		xg.id,xg.code,xg.name,ug.user_id as userId,xg.`desc`
+		FROM
+		user_group AS ug
+		INNER JOIN
+		sys_group AS xg
+		ON ug.group_id = xg.id
+		where
+		ug.user_id in
+		<foreach collection="userIds" index="index" item="userId"
+			open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+
+	</select>
+
+	<select id="findSysRoleByGroupId" parameterType="java.lang.Long"
+		resultType="com.seaboxdata.sdps.common.core.model.SysRole">
+		SELECT
+		DISTINCT role.*
+		FROM
+		role_group_item AS rgi
+		INNER
+		JOIN
+		sys_role
+		AS role
+		on
+		rgi.role_id = role.id
+		where rgi.group_id =
+		#{groupId}
+		and
+		role.type='S'
+	</select>
+	<resultMap type="com.seaboxdata.sdps.user.mybatis.dto.role.RoleDto"
+		id="itemRoleResultMap">
+		<result column="itemId" jdbcType="BIGINT" property="itemId" />
+		<result column="itemName" jdbcType="VARCHAR" property="itemName" />
+		<collection property="roles"
+			resultMap="com.seaboxdata.sdps.user.mybatis.mapper.SysRoleMapper.BaseResultMap"
+			columnPrefix="role_">
+		</collection>
+	</resultMap>
+	<select id="findItemRoleByGroupId" parameterType="java.lang.Long"
+		resultType="com.seaboxdata.sdps.user.mybatis.dto.role.RoleDto">
+		SELECT
+		item.`name` AS itemName,
+		item.id AS itemId,
+		GROUP_CONCAT(role.id) AS
+		roleIds,
+		GROUP_CONCAT(role.`name`) AS
+		roleNames
+		FROM
+		role_group_item AS rgi
+		INNER
+		JOIN
+		sys_role
+		AS role
+		on
+		rgi.role_id
+		=
+		role.id
+		INNER JOIN sdps_item as
+		item
+		on item.id =
+		rgi.item_id
+		where
+		rgi.group_id =
+		#{groupId} and
+		role.type='O'
+		group by item.id
+	</select>
+
+	<select id="findUserByGroupIds" parameterType="java.lang.Long"
+		resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT
+		DISTINCT ur.id,ur.username,ur.nickname,ug.group_id as groupId
+		FROM
+		user_group AS ug
+		INNER
+		JOIN
+		sys_user as ur
+		on ug.user_id = ur.id
+		where
+		ug.group_id in
+		<foreach collection="groupIds" index="index" item="groupId"
+			open="(" separator="," close=")">
+			#{groupId}
+		</foreach>
+	</select>
+
+	<select id="findExistMemberByGroup" resultType="com.seaboxdata.sdps.common.core.model.SysUser">
+		SELECT distinct
+		ur.id,ur.nickname,ur.username
+		FROM
+		sys_user
+		AS
+		ur
+		INNER JOIN
+		user_group AS
+		ug ON ur.id =
+		ug.user_id
+		WHERE
+		group_id
+		=
+		#{group.id}
+	</select>
+
+</mapper>

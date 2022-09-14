@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.seaboxdata.sdps.common.framework.configuration.DateConverterConfig,\
+com.seaboxdata.sdps.common.framework.configuration.JacksonConfiguration

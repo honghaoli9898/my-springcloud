@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seaboxdata.sdps.item.mapper.UserRoleItemMapper">
+	<resultMap id="BaseResultMap" type="com.seaboxdata.sdps.item.model.UserRoleItem">
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="role_id" jdbcType="BIGINT" property="roleId" />
+		<result column="item_id" jdbcType="BIGINT" property="itemId" />
+		<result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+	</resultMap>
+	<select id="selectItemUserCnt" resultType="com.seaboxdata.sdps.item.model.UserRoleItem">
+		SELECT
+		item_id,
+		count( 1 ) AS user_id
+		FROM
+		( SELECT  item_id,
+		user_id
+		FROM user_role_item
+		<where>
+			<if test="ids != null and ids.size() >0">
+				and item_id in
+				<foreach collection="ids" index="index" item="id" open="("
+					separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+		) t
+		GROUP BY
+		item_id
+		<if test="isRank">
+		  ORDER BY user_id desc limit 10
+		</if>
+	</select>
+</mapper>
